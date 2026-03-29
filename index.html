@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Subjects</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { height: 100%; }
+    body {
+      background: #000;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+
+    .container {
+      background: #000;
+      position: relative;
+      width: 100vw;
+      height: 100vh;  
+      overflow: hidden;
+      transition: background-image 0.8s ease-in-out;
+    }
+
+    .slide {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .item {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;
+      height: 250px;
+      border-radius: 20px;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.5);
+      background-position: center;
+      background-size: cover;
+      transition: all 0.5s;
+      pointer-events: auto; 
+      z-index: 1;
+    }
+
+    
+    .slide .item:nth-child(1),
+    .slide .item:nth-child(2) {
+      top: 0;
+      left: 0;
+      transform: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      
+    }
+    .slide .item:nth-child(3) { left: 75%; }
+    .slide .item:nth-child(4) { left: calc(75% + 220px); }
+    .slide .item:nth-child(n + 5) { left: calc(50% + 660px); opacity: 0; }
+
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 8%;
+      max-width: 42%;
+      color: #fff;
+      transform: translateY(-50%);
+      display: none;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+      pointer-events: auto;    
+      z-index: 10;             
+    }
+    .slide .item:nth-child(2) .content { display: block; }
+
+    .name {
+      font-size: clamp(2rem, 6vw, 4rem);
+      text-transform: uppercase;
+      font-weight: 800;
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards;
+    }
+
+    .des {
+      margin: 1rem 0 2rem;
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      line-height: 1.4;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.3s forwards;
+    }
+
+    .seeMore {
+      display: inline-block;
+      text-decoration: none;
+      pointer-events: auto; 
+    }
+
+    .seeMore button {
+      padding: 12px 22px;
+      border: 2px solid #fff;
+      color: #000;
+      background: rgba(255,255,255,0.85);
+      border-radius: 100px;
+      cursor: pointer;
+      opacity: 0;
+      transition: background 0.25s, transform 0.2s;
+      animation: fadeIn 1s ease-out 0.6s forwards;
+      pointer-events: auto; 
+      position: relative;
+      z-index: 11; 
+    }
+    .seeMore button:hover { background: #fff; transform: translateY(-1px); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(100px); filter: blur(20px); }
+      to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    .button {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 100;          
+    }
+
+    .button button {
+      width: 56px;
+      height: 44px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+      color: #fff;
+      background: rgba(255,255,255,0.28);
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(2px);
+    }
+    .button button:hover { transform: scale(1.08); background: rgba(255,255,255,0.5); }
+    .next { padding-left: 3px; }
+    .prev { padding-right: 3px; }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 96px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      padding: 0 28px;
+      z-index: 200;
+    }
+
+    .top-bar-btn {
+      padding: 12px 28px;
+      border: 2px solid #fff;
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.25s, transform 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .top-bar-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-1px); }
+
+    @media (max-width: 768px) {
+      .content { left: 6%; max-width: 88%; }
+      .item { box-shadow: 0 20px 30px rgba(0,0,0,0.4); }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="About%20Us.html" class="top-bar-btn">About Us</a>
+    <a href="login.html" class="top-bar-btn">Login / Sign Up</a>
+  </div>
+  <div class="container">
+    <div class="slide">
+      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1920&auto=format&fit=crop');">
+        <div class="content">
+          <div class="name">English</div>
+          <div class="des">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+         
+          <a class="seeMore" href="Eng.html"><button>See More</button></a>
+        </div>
+      </div>
+
+      <div class="item" style="background-image: url('https://images.unsplash.com/vector-1766859341652-db8dc0420ead?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        <div class="content">
+          <div class="name">Bengali</div>
+          <div class="des">bengali bengali</div>
+          <a class="seeMore" href="Beng.html"><button>See More</button></a>
+        </div>
+      </div>
+
+      <div class="item" style="background-image: url('https://plus.unsplash.com/premium_photo-1724800663740-33d7cad1e8b0?auto=format&fit=crop&q=80&w=1170');">
+        <div class="content">
+          <div class="name">Math</div>
+          <div class="des">World of math</div>
+          <a class="seeMore" href="Math.html"><button>Enter</button></a>
+        </div>
+      </div>
+
+    <div class="item" style="background-image: url('https://images.unsplash.com/vector-1766855939068-02408a72e0d5?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        <div class="content">
+          <div class="name">L. Science</div>
+          <div class="des">L. Science</div>
+          <a class="seeMore" href="Bio.html"><button>Enter</button></a>
+        </div>
+      </div>
+
+
+      <div class="item" style="background-image: url('https://images.unsplash.com/photo-1760295451885-02f262547125?auto=format&fit=crop&q=80&w=1385');">
+        <div class="content">
+          <div class="name">P.Science</div>
+          <div class="des">P.Science P.Science P.Science</div>
+          <a class="seeMore" href="PSc.html"><button>Enter</button></a>
+        </div>
+      </div>
+
+      <div class="item" style="background-image: url('https://plus.unsplash.com/premium_photo-1698238183325-08273f02ad1b?auto=format&fit=crop&q=80&w=1170');">
+        <div class="content">
+          <div class="name">History</div>
+          <div class="des">History History History</div>
+          <a class="seeMore" href="hist.html"><button>Enter</button></a>
+        </div>
+      </div>
+
+      <div class="item" style="background-image: url('https://images.unsplash.com/vector-1766860426379-0f2ea337fd53?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        <div class="content">
+          <div class="name">Geography</div>
+          <div class="des">Geography Geography Geography</div>
+          <a class="seeMore" href="geo.html"><button>Enter</button></a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="button">
+      <button class="prev" aria-label="Previous">◁</button>
+      <button class="next" aria-label="Next">▷</button>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+    document.addEventListener("DOMContentLoaded", () => {
+      const slide = document.querySelector(".slide");
+      const next = document.querySelector(".next");
+      const prev = document.querySelector(".prev");
+
+      if (!slide || !next || !prev) return;
+
+      next.addEventListener("click", () => {
+        const items = slide.querySelectorAll(".item");
+        if (items.length) slide.appendChild(items[0]);
+      });
+
+      prev.addEventListener("click", () => {
+        const items = slide.querySelectorAll(".item");
+        if (items.length) slide.prepend(items[items.length - 1]);
+      });
+
+      
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") next.click();
+        if (e.key === "ArrowLeft")  prev.click();
+      });
+
+      // Swipe navigation for touch devices
+      let startX = 0;
+      let endX = 0;
+
+        slide.addEventListener("touchstart", e => {
+          startX = e.touches[0].clientX;
+        });
+
+        slide.addEventListener("touchend", e => {
+          endX = e.changedTouches[0].clientX;
+          if (startX - endX > 50) next.click();   // Swipe left → Next
+          if (endX - startX > 50) prev.click();   // Swipe right → Previous
+        });
+    });
+  </script>
+</body>
+</html>
