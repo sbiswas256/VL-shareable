@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Learning</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --primary-light: #cde1fe;
+      --background: #fafbfc;
+      --card-bg: #fff;
+      --card-radius: 14px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 32px rgba(0,0,0,0.12);
+      --text: #222;
+      --nav-text: #444;
+      --footer-bg: #fff;
+      --footer-border: #eee;
+    }
+
+    [data-theme="dark"] {
+      --primary: #4a9eff;
+      --primary-light: #1a3a5c;
+      --background: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-hover: 0 8px 32px rgba(0,0,0,0.5);
+      --text: #e0e0e0;
+      --nav-text: #b0b0b0;
+      --footer-bg: #252525;
+      --footer-border: #444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5vw;
+      background: var(--footer-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: box-shadow 0.3s ease;
+      flex-wrap: wrap;
+    }
+
+    header.scrolled {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    header h1 {
+      font-size: 2em;
+      color: var(--primary);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    header h1:hover {
+      transform: scale(1.05);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+      background: none;
+      border: none;
+      padding: 10px;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: var(--text);
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(8px, -8px);
+    }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--nav-text);
+      font-weight: 500;
+      font-size: 1em;
+      padding: 10px 24px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      background: var(--footer-bg);
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    nav a::after {
+      display: none;
+    }
+
+    nav a:hover {
+      background: var(--footer-bg);
+      color: var(--primary);
+      box-shadow: 0 6px 12px rgba(0, 123, 255, 0.15), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    nav a:active {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+    }
+
+    [data-theme="dark"] nav a {
+      background: #3a3a3a;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="dark"] nav a:hover {
+      background: #464646;
+      box-shadow: 0 6px 12px rgba(74, 158, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .container {
+      padding: 2.5rem 5vw;
+      width: min(100%, 1840px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2rem;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+    }
+
+    body.fade-out {
+      animation: fadeOut 0.4s ease-in forwards;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(0,123,255,0.05) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover, .card:focus-within {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card:active {
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    .card iframe, .card .card-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      background: #eaeaea;
+      display: block;
+      transition: filter 0.3s ease;
+    }
+
+    [data-theme="dark"] .card iframe,
+    [data-theme="dark"] .card .card-placeholder {
+      background: #444;
+    }
+
+    .card:hover iframe, .card:hover .card-placeholder {
+      filter: brightness(1.05);
+    }
+
+    .card .card-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 6.6em;
+      color: #aaa;
+      background: linear-gradient(135deg, #f5f6fa 0%, #f0f1f3 100%);
+      min-height: 90px;
+      user-select: none;
+    }
+
+    [data-theme="dark"] .card .card-placeholder {
+      color: #666;
+      background: linear-gradient(135deg, #444 0%, #3a3a3a 100%);
+    }
+
+    .card-title {
+      padding: 1.1rem;
+      font-weight: 500;
+      font-size: 1.17em;
+      text-align: center;
+      color: var(--text);
+      background: var(--background);
+      width: 100%;
+      border-top: 1px solid #f0f0f4;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card:hover .card-title {
+      background: var(--footer-bg);
+      color: var(--primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: var(--footer-bg);
+      color: #666;
+      font-size: 1em;
+      margin-top: 2rem;
+      border-top: 1px solid var(--footer-border);
+      transition: all 0.3s ease;
+    }
+
+    #scroll-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      box-shadow: var(--shadow-hover);
+      z-index: 99;
+    }
+
+    #scroll-to-top:hover {
+      transform: translateY(20px) scale(1.1);
+      box-shadow: 0 10px 40px rgba(0,123,255,0.3);
+    }
+
+    #scroll-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #theme-toggle {
+      display: none;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .theme-switch {
+      display: inline-block;
+      position: relative;
+      width: 65px;
+      height: 34px;
+      cursor: pointer;
+    }
+
+    .switch-slider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 45px;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sun-icon {
+      opacity: 1;
+      color: #ffffff;
+    }
+
+    .moon-icon {
+      opacity: 0;
+      color: #888888;
+    }
+
+    #theme-toggle:checked ~ .switch-slider .sun-icon {
+      opacity: 0;
+    }
+
+    #theme-toggle:checked ~ .switch-slider .moon-icon {
+      opacity: 1;
+    }
+
+    .switch-slider:before {
+      content: "";
+      position: absolute;
+      height: 28px;
+      width: 28px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 0;
+    }
+
+    #theme-toggle:checked + .switch-slider {
+      background-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    [data-theme="dark"] #theme-toggle:checked + .switch-slider {
+      background-color: #b0b0b0;
+      box-shadow: 0 2px 8px rgba(176, 176, 176, 0.3);
+    }
+
+    #theme-toggle:checked + .switch-slider:before {
+      transform: translateX(31px);
+    }
+
+    .theme-switch:hover .switch-slider {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="dark"] .switch-slider {
+      background-color: var(--primary-light);
+    }
+
+
+    @media (min-width: 1201px) {
+      .container {
+        padding: 3.25rem 2vw;
+        gap: 2.5rem;
+      }
+
+      .card iframe, .card .card-placeholder {
+        min-height: 280px;
+      }
+
+      .card-title {
+        font-size: 1.12em;
+        padding: 1.35rem;
+      }
+    }
+    @media (max-width: 1200px) {
+      header, .container {
+        padding-left: 2vw;
+        padding-right: 2vw;
+      }
+      .container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .card-title { font-size: 1em; }
+      #scroll-to-top {
+        bottom: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+      }
+    }
+    @media (max-width: 1600px) {
+      header h1 { font-size: 1.3em; }
+      .card-title { font-size: 0.95em; }
+    }
+
+    /* Tablet Screens (768px - 1024px) - Medium Displays */
+    @media (max-width: 1024px) {
+      header {
+        padding: 1rem 3vw;
+      }
+      
+      header h1 {
+        font-size: 1.5em;
+      }
+
+      nav {
+        gap: 0.5rem;
+      }
+
+      nav a {
+        padding: 8px 16px;
+        font-size: 0.9em;
+      }
+
+      .container {
+        padding: 2rem 3vw;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 0.9em;
+        padding: 0.8rem;
+      }
+
+      .card {
+        border-radius: 10px;
+      }
+
+      #scroll-to-top {
+        width: 38px;
+        height: 38px;
+        font-size: 1.2em;
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+
+      footer {
+        padding: 1.5rem;
+        font-size: 0.9em;
+      }
+    }
+
+    /* Mobile Screens (480px - 767px) */
+    @media (max-width: 768px) {
+      header {
+        padding: 0.8rem 3vw;
+      }
+
+      header h1 {
+        font-size: 1.2em;
+        letter-spacing: 0.2px;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--footer-bg);
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem;
+        border-top: 1px solid var(--footer-border);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        width: 100%;
+      }
+
+      nav.active {
+        max-height: 300px;
+      }
+
+      nav a {
+        width: 100%;
+        padding: 12px 16px;
+        text-align: left;
+        border-radius: 8px;
+        margin: 4px 0;
+        font-size: 0.95em;
+      }
+
+      .theme-switch {
+        position: absolute;
+        right: 50px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .container {
+        padding: 1.5rem 3vw;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.2rem;
+      }
+
+      .card {
+        border-radius: 8px;
+      }
+
+      .card iframe, .card .card-placeholder {
+        aspect-ratio: 16 / 9;
+        min-height: 180px;
+      }
+
+      .card-title {
+        font-size: 0.85em;
+        padding: 0.7rem;
+      }
+
+      #scroll-to-top {
+        width: 36px;
+        height: 36px;
+        font-size: 1em;
+        bottom: 1rem;
+        right: 1rem;
+      }
+
+      footer {
+        padding: 1.2rem;
+        font-size: 0.85em;
+        margin-top: 1.5rem;
+      }
+
+      body {
+        line-height: 1.5;
+      }
+    }
+
+    /* Small Mobile Screens (< 480px) */
+    @media (max-width: 480px) {
+      header {
+        padding: 0.7rem 2vw;
+      }
+
+      header h1 {
+        font-size: 1em;
+        min-width: auto;
+      }
+
+      nav {
+        padding: 0.8rem;
+      }
+
+      nav a {
+        padding: 10px 12px;
+        font-size: 0.85em;
+      }
+
+      .container {
+        padding: 1rem 2vw;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        border-radius: 6px;
+      }
+
+      .card iframe, .card .card-placeholder {
+        min-height: 150px;
+      }
+
+      .card .card-placeholder {
+        font-size: 4em;
+      }
+
+      .card-title {
+        font-size: 0.75em;
+        padding: 0.6rem;
+      }
+
+      .theme-switch {
+        position: absolute;
+        right: 45px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 55px;
+        height: 28px;
+      }
+
+      .switch-slider {
+        padding: 0 4px;
+      }
+
+      .switch-slider:before {
+        height: 24px;
+        width: 24px;
+        left: 2px;
+        bottom: 2px;
+      }
+
+      #theme-toggle:checked + .switch-slider:before {
+        transform: translateX(27px);
+      }
+
+      #scroll-to-top {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85em;
+        bottom: 0.8rem;
+        right: 0.8rem;
+      }
+
+      footer {
+        padding: 1rem;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+  <script src="../security-vls.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Visual Learning</h1>
+    <button class="hamburger" id="hamburger-menu" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="nav-menu">
+      <a href="index.html">🏠 Home</a>
+      <a href="suggestion.html">💡 Suggestion Box</a>
+      <label class="theme-switch" title="Toggle dark/light mode">
+        <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" />
+        <span class="switch-slider">
+          <span class="icon sun-icon">☀️</span>
+          <span class="icon moon-icon">🌙</span>
+        </span>
+      </label>
+    </nav>
+  </header>
+
+  <main class="container">
+
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy"
+             title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+        <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy"
+             title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div>
+    </div>
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy"
+             title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+        <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy"
+             title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+        <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy"
+             title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div> 
+    </div>
+
+    <div class="card">
+      <iframe src=".................." allowfullscreen loading="lazy" 
+            title="Next Chapter coming soon"></iframe>
+      <div class="card-title">Next Chapter coming soon</div>
+    </div>
+   
+    <div class="card">
+      <div class="card-placeholder">🚧</div>
+      <div class="card-title">Next Chapter Coming Soon</div>
+    </div>
+
+  </main>
+
+  <footer>
+    © 2025 Visual Learning. All rights reserved.
+  </footer>
+
+  <button id="scroll-to-top" aria-label="Back to top">↑</button>
+
+  <script>
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger-menu');
+    const navMenu = document.getElementById('nav-menu');
+    
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+      });
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    
+    // Load saved theme or check system preference
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    themeToggle.checked = savedTheme === 'dark';
+    
+    themeToggle.addEventListener('change', () => {
+      const newTheme = themeToggle.checked ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // Page transition effect
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = link.href;
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = url;
+        }, 400);
+      });
+    });
+
+    // Scroll-to-Top Button
+    const scrollBtn = document.getElementById('scroll-to-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
+      }
+      
+      // Enhanced header shadow on scroll
+      const header = document.querySelector('header');
+      if (window.scrollY > 0) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Logo click to home
+    const logo = document.querySelector('header h1');
+    logo.addEventListener('click', () => {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 400);
+    });
+
+    // Card ripple effect on click
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple');
+        
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
+      });
+    });
+
+    // Page load animation
+    window.addEventListener('load', () => {
+      document.body.style.animation = 'fadeIn 0.6s ease-out';
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+

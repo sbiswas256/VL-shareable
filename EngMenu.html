@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Popular Creator Cards</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #007bff;
+      --primary-light: #cde1fe;
+      --background: #fafbfc;
+      --list-highlight: #818181ee;
+      --list-active-text: #000;
+      --card-bg: #fff;
+      --card-radius: 14px;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --text: #4485db;
+      --nav-text: #444;
+      --footer-bg: #fff;
+      --footer-border: #eee;
+      --page-bg: #e8edf3;
+      --creator-card-bg: #f2f3f5e1;
+      --creator-card-shadow:
+        25px 25px 75px rgba(151, 164, 184, 0.42),
+        10px 10px 70px rgba(151, 164, 184, 0.35),
+        inset 5px 5px 10px rgba(151, 164, 184, 0.35),
+        inset 5px 5px 20px rgba(255, 255, 255, 0.82),
+        inset -5px -5px 15px rgba(151, 164, 184, 0.35);
+      --creator-card-pop-shadow:
+        0 28px 72px rgba(110, 125, 148, 0.35),
+        0 12px 46px rgba(110, 125, 148, 0.25),
+        inset 5px 5px 10px rgba(151, 164, 184, 0.35),
+        inset 5px 5px 20px rgba(255, 255, 255, 0.82),
+        inset -5px -5px 15px rgba(151, 164, 184, 0.35);
+      --card-title-text: #1554ad;
+      --creator-name: #364153;
+      --creator-meta: #667085;
+      --rank-inner-bg: #e8edf3;
+      --selection-overlay: rgba(232, 237, 243, 0.2);
+      --capsule-bg: rgba(150, 169, 182, 0.356);
+    }
+
+    [data-theme="dark"] {
+      --primary: #4a9eff;
+      --primary-light: #1a3a5c;
+      --background: #1a1a1a;
+      --list-highlight: #111111;
+      --list-active-text: #fff;
+      --card-bg: #2d2d2d;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+      --text: #e0e0e0;
+      --nav-text: #b0b0b0;
+      --footer-bg: #252525;
+      --footer-border: #444;
+      --page-bg: #2f363e;
+      --creator-card-bg: #2f363e;
+      --creator-card-shadow:
+        25px 25px 75px rgba(0, 0, 0, 0.25),
+        10px 10px 70px rgba(0, 0, 0, 0.25),
+        inset 5px 5px 10px rgba(0, 0, 0, 0.5),
+        inset 5px 5px 20px rgba(255, 255, 255, 0.2),
+        inset -5px -5px 15px rgba(0, 0, 0, 0.75);
+      --creator-card-pop-shadow:
+        0 28px 72px rgba(0, 0, 0, 0.38),
+        0 12px 46px rgba(0, 0, 0, 0.28),
+        inset 5px 5px 10px rgba(0, 0, 0, 0.5),
+        inset 5px 5px 20px rgba(255, 255, 255, 0.2),
+        inset -5px -5px 15px rgba(0, 0, 0, 0.75);
+      --card-title-text: #fff;
+      --creator-name: #bcbcc0;
+      --creator-meta: #95999d;
+      --rank-inner-bg: #2f363e;
+      --selection-overlay: rgba(47, 54, 62, 0.18);
+      --capsule-bg: rgba(255, 255, 255, 0.08);
+    }
+
+
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: 'Quicksand', 'Baloo Da 2', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: auto;
+      overflow-y: visible;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5vw;
+      background: var(--footer-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: box-shadow 0.3s ease;
+      width: 100%;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    header.scrolled {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    header h1 {
+      font-size: 2em;
+      color: var(--primary);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    header h1.bangla-title {
+      font-size: 2.6em;
+    }
+
+    header h1:hover {
+      transform: scale(1.05);
+    }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--nav-text);
+      font-weight: 500;
+      font-size: 1em;
+      padding: 10px 24px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      background: var(--footer-bg);
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    nav a::after {
+      display: none;
+    }
+
+    nav a:hover {
+      background: var(--footer-bg);
+      color: var(--primary);
+      box-shadow: 0 6px 12px rgba(0, 123, 255, 0.15), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    nav a:active {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+    }
+
+    [data-theme="dark"] nav a {
+      background: #3a3a3a;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="dark"] nav a:hover {
+      background: #464646;
+      box-shadow: 0 6px 12px rgba(74, 158, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+    }
+
+    body.fade-out {
+      animation: fadeOut 0.4s ease-in forwards;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-color: var(--selection-overlay);
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+        backdrop-filter 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+        -webkit-backdrop-filter 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+    }
+
+    body.has-selection::before {
+      opacity: 1;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 36px;
+      width: max-content;
+      min-width: 100%;
+      overflow: visible;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .container {
+      position: relative;
+      flex: 0 0 auto;
+      width: 350px;
+      padding: 50px;
+      min-height: 500px;
+      border-radius: 30px;
+      background-color: var(--creator-card-bg);
+      box-shadow: var(--creator-card-shadow);
+      cursor: pointer;
+      transform: translateZ(0);
+      will-change: transform, filter, opacity;
+      transition:
+        transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.46s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.3s ease;
+    }
+
+    .container:focus {
+      outline: none;
+    }
+
+    body.has-selection .container {
+      filter: blur(4px);
+      opacity: 0.68;
+    }
+
+    body.has-selection .container.is-selected {
+      filter: none;
+      opacity: 1;
+      transform: translateZ(0) scale(1.06);
+      z-index: 3;
+      animation: cardPop 0.56s cubic-bezier(0.16, 1, 0.3, 1);
+      background-color: var(--primary-light);
+      box-shadow: 0 0 35px var(--primary), var(--creator-card-pop-shadow);
+    }
+
+    @keyframes cardPop {
+      0% {
+        transform: translateZ(0) scale(1);
+      }
+
+      62% {
+        transform: translateZ(0) scale(1.075);
+      }
+
+      100% {
+        transform: translateZ(0) scale(1.06);
+      }
+    }
+
+    .container h3 {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      color: var(--card-title-text);
+      font-weight: 800;
+      font-size: 1.5em;
+      /* Increased size */
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      background-color: var(--capsule-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 14px 20px;
+      /* More breathable spacing */
+      border-radius: 30px;
+      /* Matched to container */
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+      /* Stronger separation */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.15);
+      /* Premium glass bezel effect */
+      border: 1px solid rgba(128, 128, 128, 0.25);
+    }
+
+    .container h3::before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 22.5px);
+      bottom: calc(50% - 22.5px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45px;
+      border-radius: 30px;
+      background: #1f83f2;
+      box-shadow:
+        5px 5px 7px rgba(0, 0, 0, 0.25),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.25),
+        inset -3px -3px 5px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s;
+      z-index: -1;
+      opacity: 0;
+      will-change: width, transform, opacity;
+    }
+
+    .container.is-selected h3::before {
+      width: 100%;
+      top: 0;
+      bottom: 0;
+      opacity: 1;
+    }
+
+    .container.is-selected h3 {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .container h3:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.25);
+    }
+
+    .list {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      cursor: pointer;
+    }
+
+    .list::before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 22.5px);
+      bottom: calc(50% - 22.5px);
+      left: 0;
+      width: 45px;
+      border-radius: 50px;
+      background: var(--list-highlight);
+      box-shadow:
+        5px 5px 7px rgba(0, 0, 0, 0.25),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.25),
+        inset -3px -3px 5px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s;
+    }
+
+    .list:hover::before,
+    .list.is-active::before {
+      width: 100%;
+      top: 0;
+      bottom: 0;
+    }
+
+    .rank {
+      position: relative;
+      min-width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+
+    .rank::before {
+      content: '';
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      background-color: var(--rank-inner-bg);
+      border-radius: 30px;
+      transform: scale(0);
+      transition: background-color 0.3s ease, transform 0.5s;
+    }
+
+    .rank span {
+      position: relative;
+      font-weight: 600;
+      font-size: 1em;
+      color: #fff;
+      transition: all 0.5s;
+    }
+
+    .list:hover .rank::before,
+    .list.is-active .rank::before {
+      transform: scale(1);
+    }
+
+    .list:hover .rank span,
+    .list.is-active .rank span {
+      color: var(--list-active-text);
+      font-weight: 800;
+    }
+
+    .creator {
+      position: relative;
+      line-height: 1.15em;
+    }
+
+    .creator h4 {
+      font-weight: 500;
+      font-size: 1.25em;
+      /* Increased size for readability */
+      color: var(--creator-name);
+      transition: color 0.3s ease;
+    }
+
+    .creator h4 a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 10px 0;
+    }
+
+    .creator p {
+      font-weight: 400;
+      color: var(--creator-meta);
+      font-size: 0.85em;
+      transition: color 0.3s ease;
+    }
+
+    .list:hover .creator h4,
+    .list.is-active .creator h4,
+    .list:hover .creator p,
+    .list.is-active .creator p {
+      color: var(--list-active-text);
+    }
+
+    .list:hover .creator h4,
+    .list.is-active .creator h4 {
+      font-weight: 700;
+    }
+
+    #theme-toggle {
+      display: none;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .theme-switch {
+      display: inline-block;
+      position: relative;
+      width: 65px;
+      height: 34px;
+      cursor: pointer;
+    }
+
+    .switch-slider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 45px;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sun-icon {
+      opacity: 1;
+      color: #ffffff;
+    }
+
+    .moon-icon {
+      opacity: 0;
+      color: #888888;
+    }
+
+    #theme-toggle:checked~.switch-slider .sun-icon {
+      opacity: 0;
+    }
+
+    #theme-toggle:checked~.switch-slider .moon-icon {
+      opacity: 1;
+    }
+
+    .switch-slider:before {
+      content: "";
+      position: absolute;
+      height: 28px;
+      width: 28px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 0;
+    }
+
+    #theme-toggle:checked+.switch-slider {
+      background-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    [data-theme="dark"] #theme-toggle:checked+.switch-slider {
+      background-color: #b0b0b0;
+      box-shadow: 0 2px 8px rgba(176, 176, 176, 0.3);
+    }
+
+    #theme-toggle:checked+.switch-slider:before {
+      transform: translateX(31px);
+    }
+
+    .theme-switch:hover .switch-slider {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="dark"] .switch-slider {
+      background-color: var(--primary-light);
+    }
+
+    /* ── Responsive Adaptations ───────────────────────────────────────── */
+
+    /* Projectors & Android TVs (1080p and 4K) */
+    @media (min-width: 1920px) {
+      html {
+        font-size: 1.25em;
+        /* Scales up all relative em/rem typography */
+      }
+
+      .cards {
+        gap: 50px;
+        /* Wider spacing for large canvas */
+      }
+
+      .container {
+        width: 420px;
+        /* Larger cards on giant screens */
+        padding: 60px;
+      }
+    }
+
+    @media (min-width: 2560px) {
+      html {
+        font-size: 1.6em;
+        /* Scales up 1.6x for 4k distance */
+      }
+
+      .container {
+        width: 500px;
+      }
+    }
+
+    /* Tablets */
+    @media (max-width: 992px) {
+      .cards {
+        gap: 25px;
+      }
+
+      .container {
+        width: 320px;
+        padding: 40px;
+        min-height: 450px;
+      }
+
+      header {
+        padding: 1rem 3vw;
+      }
+    }
+
+    /* Mobile Phones */
+    @media (max-width: 600px) {
+      html {
+        font-size: 0.95em;
+        /* Slightly shrink font proportionally */
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        /* allow wrapping if too scrunched */
+        justify-content: center;
+      }
+
+      header h1 {
+        font-size: 1.7em;
+      }
+
+      header h1.bangla-title {
+        font-size: 2.1em;
+      }
+
+      .cards {
+        gap: 15px;
+        padding-left: 5vw;
+        /* Soften the left edge margin for touch-scroll */
+        padding-right: 5vw;
+        justify-content: flex-start;
+        /* Stop center-justifying on layout shrink to allow scrolling from edge */
+      }
+
+      .container {
+        width: calc(100vw - 40px);
+        /* 100% of phone width minus some edge */
+        max-width: 350px;
+        padding: 30px 20px;
+        min-height: 480px;
+      }
+
+      .container h3 {
+        font-size: 1.35em;
+      }
+
+      .creator h4 {
+        font-size: 1.1em;
+      }
+    }
+
+    /* Suspend expensive hover-animations on raw touch devices for battery & perf */
+    @media (hover: none) and (pointer: coarse) {
+      .container:hover {
+        transform: translateZ(0);
+        /* Ignore hover scale */
+        box-shadow: var(--creator-card-shadow);
+      }
+    }
+  </style>
+  <script src="security-vls.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Visual Learning</h1>
+    <h1 class="bangla-title"> English </h1>
+    <nav>
+      <a href="index.html">🏠 Home</a>
+      <a href="Find Us/Suggestion.html">💡 Suggestion Box</a>
+      <label class="theme-switch" title="Toggle dark/light mode">
+        <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" />
+        <span class="switch-slider">
+          <span class="icon sun-icon">☀️</span>
+          <span class="icon moon-icon">🌙</span>
+        </span>
+      </label>
+    </nav>
+  </header>
+
+  <main class="cards">
+
+
+    <section class="container">
+      <h3>English Reading </h3>
+      <div class="list">
+        <div class="rank"><span>1</span></div>
+        <div class="creator">
+          <h4><a href="#">First Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>2</span></div>
+        <div class="creator">
+          <h4><a href="#">Second Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>3</span></div>
+        <div class="creator">
+          <h4><a href="#">Third Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>4</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>5</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>6</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>7</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="container">
+      <h3>English Grammer </h3>
+      <div class="list">
+        <div class="rank"><span>1</span></div>
+        <div class="creator">
+          <h4><a href="#">First Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>2</span></div>
+        <div class="creator">
+          <h4><a href="#">Second Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>3</span></div>
+        <div class="creator">
+          <h4><a href="#">Third Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>4</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>5</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>6</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>7</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <h3>English Vocbulary </h3>
+      <div class="list">
+        <div class="rank"><span>1</span></div>
+        <div class="creator">
+          <h4><a href="#">First Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>2</span></div>
+        <div class="creator">
+          <h4><a href="#">Second Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>3</span></div>
+        <div class="creator">
+          <h4><a href="#">Third Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>4</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>5</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>6</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>7</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <h3>English Writing </h3>
+      <div class="list">
+        <div class="rank"><span>1</span></div>
+        <div class="creator">
+          <h4><a href="#">First Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>2</span></div>
+        <div class="creator">
+          <h4><a href="#">Second Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>3</span></div>
+        <div class="creator">
+          <h4><a href="#">Third Chapter </a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>4</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>5</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>6</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+      <div class="list">
+        <div class="rank"><span>7</span></div>
+        <div class="creator">
+          <h4><a href="#">Coming soon</a></h4>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    html.setAttribute('data-theme', savedTheme);
+    themeToggle.checked = savedTheme === 'dark';
+
+    themeToggle.addEventListener('change', () => {
+      const newTheme = themeToggle.checked ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        const url = link.href;
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = url;
+        }, 400);
+      });
+    });
+
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 0) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    const logo = document.querySelector('header h1');
+    logo.addEventListener('click', () => {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 400);
+    });
+
+    const cards = document.querySelectorAll('.container');
+    let focusedIndex = -1; // -1 = none selected
+    let focusedListIndex = -1; // track the selected point within the card
+
+    // Make cards focusable
+    cards.forEach((card, i) => {
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Card ${i + 1}`);
+    });
+
+    function selectSubPoint(cardIndex, listIndex) {
+      if (cardIndex < 0 || cardIndex >= cards.length) return;
+      const parentCard = cards[cardIndex];
+      const lists = parentCard.querySelectorAll('.list');
+      if (lists.length === 0) return;
+      if (listIndex < 0 || listIndex >= lists.length) return;
+
+      focusedListIndex = listIndex;
+      cards.forEach(c => c.querySelectorAll('.list').forEach(l => l.classList.remove('is-active')));
+      lists[focusedListIndex].classList.add('is-active');
+    }
+
+    function selectCard(index) {
+      if (index < 0 || index >= cards.length) return;
+      focusedIndex = index;
+      focusedListIndex = -1;
+
+      cards.forEach(item => {
+        item.classList.remove('is-selected');
+        item.querySelectorAll('.list').forEach(l => l.classList.remove('is-active'));
+      });
+
+      cards[focusedIndex].classList.add('is-selected');
+      document.body.classList.add('has-selection');
+      cards[focusedIndex].focus({ preventScroll: false });
+      cards[focusedIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+      // Auto-select the first sub-point when the card is selected
+      selectSubPoint(focusedIndex, 0);
+    }
+
+    function deselectAll() {
+      focusedIndex = -1;
+      focusedListIndex = -1;
+      cards.forEach(item => {
+        item.classList.remove('is-selected');
+        item.querySelectorAll('.list').forEach(l => l.classList.remove('is-active'));
+      });
+      document.body.classList.remove('has-selection');
+    }
+
+    cards.forEach((card, i) => {
+      card.addEventListener('click', event => {
+        event.stopPropagation();
+        if (focusedIndex !== i) {
+          selectCard(i);
+        }
+      });
+
+      const lists = card.querySelectorAll('.list');
+      lists.forEach((list, j) => {
+        list.addEventListener('mouseenter', () => {
+          if (focusedIndex === i) {
+            selectSubPoint(i, j);
+          }
+        });
+
+        list.addEventListener('click', event => {
+          event.stopPropagation();
+          if (focusedIndex !== i) {
+            selectCard(i);
+          }
+          selectSubPoint(i, j);
+        });
+      });
+    });
+
+    document.addEventListener('click', () => deselectAll());
+
+    // ── Keyboard navigation ──────────────────────────────────────────────────
+    document.addEventListener('keydown', event => {
+      // Prevent scrolling if focused
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key) && focusedIndex !== -1) {
+        event.preventDefault();
+      }
+
+      switch (event.key) {
+        case 'ArrowRight':
+          if (focusedIndex === -1) selectCard(0);
+          else selectCard(focusedIndex < cards.length - 1 ? focusedIndex + 1 : 0);
+          break;
+        case 'ArrowLeft':
+          if (focusedIndex === -1) selectCard(cards.length - 1);
+          else selectCard(focusedIndex > 0 ? focusedIndex - 1 : cards.length - 1);
+          break;
+        case 'ArrowDown':
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex < listsCount - 1 ? focusedListIndex + 1 : 0);
+          } else {
+            selectCard(0);
+          }
+          break;
+        case 'ArrowUp':
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex > 0 ? focusedListIndex - 1 : listsCount - 1);
+          } else {
+            selectCard(0);
+          }
+          break;
+        case 'Enter':
+        case ' ':
+          if (focusedIndex === -1) selectCard(0);
+          break;
+        case 'Escape':
+          deselectAll();
+          break;
+      }
+    });
+
+    // ── Gamepad / Remote navigation (Gamepad API) ────────────────────────────
+    const gamePadState = { prevButtons: {} };
+
+    function pollGamepad() {
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      for (const gp of gamepads) {
+        if (!gp) continue;
+        const id = gp.index;
+        if (!gamePadState.prevButtons[id]) gamePadState.prevButtons[id] = {};
+
+        const pressed = btn => gp.buttons[btn] && gp.buttons[btn].pressed;
+        const wasPressed = btn => gamePadState.prevButtons[id][btn];
+        const justPressed = btn => pressed(btn) && !wasPressed(btn);
+
+        // D-pad Right
+        if (justPressed(15)) {
+          if (focusedIndex === -1) selectCard(0);
+          else selectCard(focusedIndex < cards.length - 1 ? focusedIndex + 1 : 0);
+        }
+        // D-pad Left
+        if (justPressed(14)) {
+          if (focusedIndex === -1) selectCard(cards.length - 1);
+          else selectCard(focusedIndex > 0 ? focusedIndex - 1 : cards.length - 1);
+        }
+        // D-pad Down
+        if (justPressed(13)) {
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex < listsCount - 1 ? focusedListIndex + 1 : 0);
+          } else { selectCard(0); }
+        }
+        // D-pad Up
+        if (justPressed(12)) {
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex > 0 ? focusedListIndex - 1 : listsCount - 1);
+          } else { selectCard(0); }
+        }
+
+        // A / B
+        if (justPressed(0)) { if (focusedIndex === -1) selectCard(0); }
+        if (justPressed(1)) { deselectAll(); }
+
+        // Left stick
+        const axisH = gp.axes[0] || 0;
+        const axisV = gp.axes[1] || 0;
+        const prevAxisH = gamePadState.prevButtons[id]['axisH'] || 0;
+        const prevAxisV = gamePadState.prevButtons[id]['axisV'] || 0;
+
+        if (axisH > 0.5 && prevAxisH <= 0.5) {
+          if (focusedIndex === -1) selectCard(0);
+          else selectCard(focusedIndex < cards.length - 1 ? focusedIndex + 1 : 0);
+        }
+        if (axisH < -0.5 && prevAxisH >= -0.5) {
+          if (focusedIndex === -1) selectCard(cards.length - 1);
+          else selectCard(focusedIndex > 0 ? focusedIndex - 1 : cards.length - 1);
+        }
+        if (axisV > 0.5 && prevAxisV <= 0.5) {
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex < listsCount - 1 ? focusedListIndex + 1 : 0);
+          } else { selectCard(0); }
+        }
+        if (axisV < -0.5 && prevAxisV >= -0.5) {
+          if (focusedIndex !== -1) {
+            const listsCount = cards[focusedIndex].querySelectorAll('.list').length;
+            selectSubPoint(focusedIndex, focusedListIndex > 0 ? focusedListIndex - 1 : listsCount - 1);
+          } else { selectCard(0); }
+        }
+
+        gp.buttons.forEach((btn, idx) => gamePadState.prevButtons[id][idx] = btn.pressed);
+        gamePadState.prevButtons[id]['axisH'] = axisH;
+        gamePadState.prevButtons[id]['axisV'] = axisV;
+      }
+      requestAnimationFrame(pollGamepad);
+    }
+
+    if ('getGamepads' in navigator) {
+      window.addEventListener('gamepadconnected', () => requestAnimationFrame(pollGamepad));
+    }
+  </script>
+</body>
+
+</html>

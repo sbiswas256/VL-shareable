@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggestion Box | VisuaLearning</title>
+    <script src="../security-vls.js"></script>
+    <style>
+        :root {
+            --bg: #e0e5ec;
+            --surface: #e9eef5;
+            --text: #3d4468;
+            --muted: #9499b7;
+            --accent: #6c7293;
+            --shadow-raised: -14px -14px 28px rgba(255, 255, 255, 0.92), 14px 14px 30px rgba(169, 181, 201, 0.42);
+            --shadow-pressed: inset -10px -10px 22px rgba(255, 255, 255, 0.78), inset 10px 10px 22px rgba(173, 184, 203, 0.34);
+            --max-width: 1280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #dce2ea 0%, var(--bg) 45%, #e7ecf3 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .page-shell {
+            width: min(calc(100% - 40px), var(--max-width));
+            margin: 0 auto;
+            padding: 26px 0 48px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 18px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding: 18px 24px;
+            border-radius: 999px;
+            background: rgba(233, 238, 245, 0.82);
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-raised);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-copy h1 {
+            font-family: Georgia, serif;
+            font-size: clamp(1.2rem, 2.4vw, 2rem);
+            letter-spacing: 0.03em;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-links a,
+        .theme-toggle {
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: var(--surface);
+            box-shadow: var(--shadow-raised);
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: transform 0.25s ease, color 0.25s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-links a:hover,
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            color: var(--accent);
+        }
+
+        .suggestion-shell {
+            width: min(760px, 100%);
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 32px;
+            padding: 28px;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .panel {
+            background: var(--bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .form-panel {
+            padding: 36px 30px;
+        }
+
+        .form-panel h2 {
+            font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+            line-height: 1.08;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .form-intro {
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        form {
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-shell {
+            background: var(--bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-pressed);
+            transition: box-shadow 0.25s ease;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 16px 18px;
+            color: var(--text);
+            font-size: 0.98rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #a2a7c0;
+        }
+
+        textarea {
+            min-height: 170px;
+            resize: vertical;
+        }
+
+        .file-shell {
+            padding: 14px 16px;
+        }
+
+        .file-shell input[type="file"]::file-selector-button {
+            margin-right: 14px;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 14px;
+            background: var(--bg);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 6px 6px 14px #bec3cf, -6px -6px 14px #ffffff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            border: none;
+            border-radius: 18px;
+            padding: 16px 24px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-raised);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 12px 12px 24px #bec3cf, -12px -12px 24px #ffffff;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-pressed);
+        }
+
+        .success-message {
+            display: none;
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            color: #227a5f;
+            background: var(--bg);
+            box-shadow: inset 6px 6px 12px #c2d9cf, inset -6px -6px 12px #f4fff9;
+            line-height: 1.6;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            .form-panel {
+                padding: 28px 22px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .page-shell {
+                width: min(calc(100% - 24px), var(--max-width));
+            }
+            .topbar {
+                border-radius: 28px;
+                padding: 18px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-shell">
+        <header class="topbar reveal">
+            <div class="brand">
+                <div class="brand-copy">
+                    <h1>Suggestion Box</h1>
+                </div>
+            </div>
+            <nav class="nav-links" aria-label="Page sections">
+                <a href="../index.html">Home</a>
+                <button id="theme-toggle-header" class="theme-toggle" aria-label="Toggle dark/light mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </nav>
+        </header>
+
+        <main class="suggestion-shell reveal">
+            <div class="suggestion-layout">
+                <section class="panel form-panel">
+                    <h2>We value your feedback</h2>
+                    <p class="form-intro">Drop your thoughts, we would love to hear your suggestions to improve our platform.</p>
+
+                    <form id="suggestionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="field-shell">
+                                    <input type="text" id="name" name="name" placeholder="Your name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="field-shell">
+                                    <input type="tel" id="phone" name="phone" placeholder="Phone no" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="field-shell">
+                                <textarea id="suggestion" name="suggestion"
+                                    placeholder="Share your thoughts and suggestions..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="field-shell file-shell">
+                                <input type="file" id="attachment" name="attachment" accept="image/*,video/*,audio/*">
+                            </div>
+                        </div>
+
+                        <button class="submit-btn" type="submit">Submit Suggestion</button>
+
+                        <div class="success-message" id="successMessage">
+                            Thank you! Your suggestion has been submitted successfully.
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Reveal observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+
+            // Theme Toggle logic
+            const themeToggle = document.getElementById("theme-toggle-header");
+            const themeIcon = themeToggle.querySelector(".theme-icon");
+            const html = document.documentElement;
+
+            const savedTheme = localStorage.getItem("theme") || "light";
+            if (savedTheme === "dark") {
+                html.style.filter = "invert(1)";
+                themeIcon.textContent = "☀️";
+            }
+
+            themeToggle.addEventListener("click", () => {
+                const isDark = html.style.filter === "invert(1)";
+                if (isDark) {
+                    html.style.filter = "";
+                    localStorage.setItem("theme", "light");
+                    themeIcon.textContent = "🌙";
+                } else {
+                    html.style.filter = "invert(1)";
+                    localStorage.setItem("theme", "dark");
+                    themeIcon.textContent = "☀️";
+                }
+            });
+
+            // Form submission logic
+            document.getElementById('suggestionForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const suggestion = document.getElementById('suggestion').value;
+                const attachment = document.getElementById('attachment').files[0] || null;
+
+                console.log('Suggestion submitted:', {
+                    name,
+                    phone,
+                    suggestion,
+                    attachmentName: attachment ? attachment.name : null
+                });
+
+                this.reset();
+
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+
+</html>
