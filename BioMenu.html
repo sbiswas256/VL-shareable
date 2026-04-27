@@ -85,6 +85,7 @@
       margin: 0;
       box-sizing: border-box;
       font-family: 'Quicksand', 'Baloo Da 2', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html {
@@ -1057,6 +1058,11 @@
           anchor.addEventListener('click', event => {
             if (focusedIndex !== i) {
               event.preventDefault();
+            } else {
+              const isTouch = window.matchMedia("(pointer: coarse)").matches;
+              if (isTouch && focusedListIndex !== j) {
+                event.preventDefault();
+              }
             }
           });
         }
@@ -1072,9 +1078,14 @@
           if (focusedIndex !== i) {
             selectCard(i);
           } else {
-            selectSubPoint(i, j);
-            if (anchor && event.target !== anchor && !anchor.contains(event.target)) {
-              anchor.click();
+            const isTouch = window.matchMedia("(pointer: coarse)").matches;
+            if (isTouch && focusedListIndex !== j) {
+              selectSubPoint(i, j);
+            } else {
+              selectSubPoint(i, j);
+              if (anchor && event.target !== anchor && !anchor.contains(event.target)) {
+                anchor.click();
+              }
             }
           }
         });
