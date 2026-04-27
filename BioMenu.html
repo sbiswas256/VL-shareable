@@ -669,14 +669,17 @@
       }
 
       header {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-        text-align: center;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 12px;
+        padding: 15px 10px;
       }
 
       nav {
+        grid-column: 1 / -1;
         flex-wrap: wrap;
         /* allow wrapping if too scrunched */
         justify-content: center;
@@ -684,11 +687,13 @@
       }
 
       header h1 {
-        font-size: 1.6em;
+        font-size: 1.25em;
+        justify-self: end;
       }
 
       header h1.bangla-title {
-        font-size: 2em;
+        font-size: 1.55em;
+        justify-self: start;
       }
 
       .cards {
@@ -712,6 +717,62 @@
 
       .creator h4 {
         font-size: 1.1em;
+      }
+    }
+
+    /* Short screens & Landscape (e.g., Mobile/Tablet landscape) */
+    @media (max-height: 700px) and (orientation: landscape) {
+      body {
+        overflow-y: hidden;
+      }
+
+      header {
+        padding: 5px 3vw;
+        gap: 15px;
+      }
+
+      header h1 {
+        font-size: 1.3em;
+      }
+
+      header h1.bangla-title {
+        font-size: 1.6em;
+      }
+
+      nav a {
+        padding: 5px 12px;
+        font-size: 0.85em;
+      }
+
+      .container {
+        min-height: auto;
+        height: 85vh;
+        padding: 15px 20px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .container h3 {
+        font-size: 1.2em;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .list {
+        margin: 10px 0;
+      }
+
+      .creator h4 {
+        font-size: 1em;
+      }
+
+      .creator h4 a {
+        padding: 5px 0;
       }
     }
 
@@ -962,9 +1023,6 @@
 
       cards[focusedIndex].classList.add('is-selected');
       document.body.classList.add('has-selection');
-      
-      // Auto-select the first sub-point when the card is selected
-      selectSubPoint(focusedIndex, 0);
     }
 
     function selectCard(index) {
@@ -994,6 +1052,15 @@
 
       const lists = card.querySelectorAll('.list');
       lists.forEach((list, j) => {
+        const anchor = list.querySelector('a');
+        if (anchor) {
+          anchor.addEventListener('click', event => {
+            if (focusedIndex !== i) {
+              event.preventDefault();
+            }
+          });
+        }
+
         list.addEventListener('mouseenter', () => {
           if (focusedIndex === i) {
             selectSubPoint(i, j);
@@ -1004,8 +1071,12 @@
           event.stopPropagation();
           if (focusedIndex !== i) {
             selectCard(i);
+          } else {
+            selectSubPoint(i, j);
+            if (anchor && event.target !== anchor && !anchor.contains(event.target)) {
+              anchor.click();
+            }
           }
-          selectSubPoint(i, j);
         });
       });
     });
@@ -1062,7 +1133,7 @@
     // ── Native Scroll Sync ───────────────────────────────────────────────────
     let scrollTimeout = null;
     const cardsContainer = document.querySelector('.cards');
-    
+
     cardsContainer.addEventListener('scroll', () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
