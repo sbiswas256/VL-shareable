@@ -245,10 +245,10 @@
     .cards {
       display: flex;
       flex-wrap: nowrap;
-      justify-content: center;
       align-items: center;
       gap: 36px;
       width: 100vw;
+      padding: 0 5vw;
       overflow-x: auto;
       overflow-y: visible;
       scroll-snap-type: x mandatory;
@@ -261,6 +261,14 @@
 
     .cards::-webkit-scrollbar {
       display: none;
+    }
+
+    .container:first-of-type {
+      margin-left: auto;
+    }
+
+    .container:last-of-type {
+      margin-right: auto;
     }
 
     .container {
