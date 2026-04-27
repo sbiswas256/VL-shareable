@@ -104,7 +104,7 @@
       color: var(--text);
       min-height: 100vh;
       position: relative;
-      overflow-x: auto;
+      overflow-x: hidden;
       overflow-y: visible;
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -116,9 +116,10 @@
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
+      gap: 1rem;
       padding: 1rem 5vw;
       background: var(--footer-bg);
       box-shadow: var(--shadow);
@@ -141,10 +142,13 @@
       letter-spacing: 0.5px;
       transition: transform 0.3s ease;
       cursor: pointer;
+      justify-self: start;
     }
 
     header h1.bangla-title {
       font-size: 2.6em;
+      justify-self: center;
+      text-align: center;
     }
 
     header h1:hover {
@@ -155,6 +159,7 @@
       display: flex;
       gap: 1rem;
       align-items: center;
+      justify-self: end;
     }
 
     nav a {
@@ -243,12 +248,19 @@
       justify-content: center;
       align-items: center;
       gap: 36px;
-      width: max-content;
-      min-width: 100%;
-      overflow: visible;
+      width: 100vw;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       position: relative;
       z-index: 2;
       flex: 1;
+    }
+
+    .cards::-webkit-scrollbar {
+      display: none;
     }
 
     .container {
@@ -262,6 +274,7 @@
       box-shadow: var(--creator-card-shadow);
       cursor: pointer;
       transform: translateZ(0);
+      scroll-snap-align: center;
       will-change: transform, filter, opacity;
       transition:
         transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
@@ -610,6 +623,9 @@
     @media (max-width: 992px) {
       .cards {
         gap: 25px;
+        padding-left: calc(50vw - 160px);
+        padding-right: calc(50vw - 160px);
+        justify-content: flex-start;
       }
 
       .container {
@@ -620,6 +636,10 @@
 
       header {
         padding: 1rem 3vw;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
       }
     }
 
@@ -631,32 +651,33 @@
       }
 
       header {
+        display: flex;
         flex-direction: column;
         gap: 15px;
         padding: 15px;
+        text-align: center;
       }
 
       nav {
         flex-wrap: wrap;
         /* allow wrapping if too scrunched */
         justify-content: center;
+        gap: 10px;
       }
 
       header h1 {
-        font-size: 1.7em;
+        font-size: 1.6em;
       }
 
       header h1.bangla-title {
-        font-size: 2.1em;
+        font-size: 2em;
       }
 
       .cards {
         gap: 15px;
-        padding-left: 5vw;
-        /* Soften the left edge margin for touch-scroll */
-        padding-right: 5vw;
+        padding-left: calc(50vw - (min(350px, 100vw - 40px) / 2));
+        padding-right: calc(50vw - (min(350px, 100vw - 40px) / 2));
         justify-content: flex-start;
-        /* Stop center-justifying on layout shrink to allow scrolling from edge */
       }
 
       .container {
@@ -774,18 +795,6 @@
           <h4><a href="#">Coming soon</a></h4>
         </div>
       </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
     </section>
 
     <section class="container">
@@ -820,18 +829,6 @@
           <h4><a href="#">Coming soon</a></h4>
         </div>
       </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
     </section>
 
     <section class="container">
@@ -862,18 +859,6 @@
       </div>
       <div class="list">
         <div class="rank"><span>5</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
         <div class="creator">
           <h4><a href="#">Coming soon</a></h4>
         </div>
@@ -1038,13 +1023,53 @@
           break;
         case 'Enter':
         case ' ':
-          if (focusedIndex === -1) selectCard(0);
+          if (focusedIndex === -1) {
+            selectCard(0);
+          } else if (focusedListIndex !== -1) {
+            const anchor = cards[focusedIndex].querySelectorAll('.list')[focusedListIndex].querySelector('a');
+            if (anchor) anchor.click();
+          }
           break;
         case 'Escape':
           deselectAll();
           break;
       }
     });
+
+    // ── Touch Swipe navigation ───────────────────────────────────────────────
+    let touchstartX = 0;
+    let touchendX = 0;
+    let touchstartY = 0;
+    let touchendY = 0;
+
+    document.addEventListener('touchstart', e => {
+      touchstartX = e.changedTouches[0].screenX;
+      touchstartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+      touchendX = e.changedTouches[0].screenX;
+      touchendY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const diffX = touchendX - touchstartX;
+      const diffY = touchendY - touchstartY;
+
+      // Horizontal swipe must be prominent and exceed 50px threshold
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        if (diffX < 0) {
+          // Swiped left (Next card)
+          if (focusedIndex === -1) selectCard(0);
+          else selectCard(focusedIndex < cards.length - 1 ? focusedIndex + 1 : 0);
+        } else {
+          // Swiped right (Prev card)
+          if (focusedIndex === -1) selectCard(cards.length - 1);
+          else selectCard(focusedIndex > 0 ? focusedIndex - 1 : cards.length - 1);
+        }
+      }
+    }
 
     // ── Gamepad / Remote navigation (Gamepad API) ────────────────────────────
     const gamePadState = { prevButtons: {} };
@@ -1086,7 +1111,14 @@
         }
 
         // A / B
-        if (justPressed(0)) { if (focusedIndex === -1) selectCard(0); }
+        if (justPressed(0)) {
+          if (focusedIndex === -1) {
+            selectCard(0);
+          } else if (focusedListIndex !== -1) {
+            const anchor = cards[focusedIndex].querySelectorAll('.list')[focusedListIndex].querySelector('a');
+            if (anchor) anchor.click();
+          }
+        }
         if (justPressed(1)) { deselectAll(); }
 
         // Left stick
