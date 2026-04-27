@@ -247,7 +247,7 @@
       flex-wrap: nowrap;
       align-items: center;
       gap: 36px;
-      width: 100vw;
+      width: 100%;
       padding: 0 5vw;
       overflow-x: auto;
       overflow-y: visible;
@@ -275,6 +275,7 @@
       position: relative;
       flex: 0 0 auto;
       width: 350px;
+      min-width: 350px;
       padding: 50px;
       min-height: 500px;
       border-radius: 30px;
@@ -636,8 +637,17 @@
         justify-content: flex-start;
       }
 
+      .container:first-of-type {
+        margin-left: 0;
+      }
+
+      .container:last-of-type {
+        margin-right: 0;
+      }
+
       .container {
         width: 320px;
+        min-width: 320px;
         padding: 40px;
         min-height: 450px;
       }
@@ -690,8 +700,8 @@
 
       .container {
         width: calc(100vw - 40px);
-        /* 100% of phone width minus some edge */
         max-width: 350px;
+        min-width: auto;
         padding: 30px 20px;
         min-height: 480px;
       }
@@ -940,7 +950,7 @@
       lists[focusedListIndex].classList.add('is-active');
     }
 
-    function selectCard(index) {
+    function syncVisualSelection(index) {
       if (index < 0 || index >= cards.length) return;
       focusedIndex = index;
       focusedListIndex = -1;
@@ -952,11 +962,16 @@
 
       cards[focusedIndex].classList.add('is-selected');
       document.body.classList.add('has-selection');
-      cards[focusedIndex].focus({ preventScroll: false });
-      cards[focusedIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-
+      
       // Auto-select the first sub-point when the card is selected
       selectSubPoint(focusedIndex, 0);
+    }
+
+    function selectCard(index) {
+      if (index < 0 || index >= cards.length) return;
+      syncVisualSelection(index);
+      cards[focusedIndex].focus({ preventScroll: false });
+      cards[focusedIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
 
     function deselectAll() {
@@ -1044,40 +1059,34 @@
       }
     });
 
-    // ── Touch Swipe navigation ───────────────────────────────────────────────
-    let touchstartX = 0;
-    let touchendX = 0;
-    let touchstartY = 0;
-    let touchendY = 0;
+    // ── Native Scroll Sync ───────────────────────────────────────────────────
+    let scrollTimeout = null;
+    const cardsContainer = document.querySelector('.cards');
+    
+    cardsContainer.addEventListener('scroll', () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const containerRect = cardsContainer.getBoundingClientRect();
+        const trueCenter = containerRect.left + (containerRect.width / 2);
+        let closestIndex = -1;
+        let minDistance = Infinity;
 
-    document.addEventListener('touchstart', e => {
-      touchstartX = e.changedTouches[0].screenX;
-      touchstartY = e.changedTouches[0].screenY;
-    }, { passive: true });
+        cards.forEach((card, i) => {
+          const rect = card.getBoundingClientRect();
+          const cardCenter = rect.left + (rect.width / 2);
+          const distance = Math.abs(trueCenter - cardCenter);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = i;
+          }
+        });
 
-    document.addEventListener('touchend', e => {
-      touchendX = e.changedTouches[0].screenX;
-      touchendY = e.changedTouches[0].screenY;
-      handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-      const diffX = touchendX - touchstartX;
-      const diffY = touchendY - touchstartY;
-
-      // Horizontal swipe must be prominent and exceed 50px threshold
-      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-        if (diffX < 0) {
-          // Swiped left (Next card)
-          if (focusedIndex === -1) selectCard(0);
-          else selectCard(focusedIndex < cards.length - 1 ? focusedIndex + 1 : 0);
-        } else {
-          // Swiped right (Prev card)
-          if (focusedIndex === -1) selectCard(cards.length - 1);
-          else selectCard(focusedIndex > 0 ? focusedIndex - 1 : cards.length - 1);
+        // Only update if they scrolled to a NEW card naturally
+        if (closestIndex !== -1 && focusedIndex !== closestIndex) {
+          syncVisualSelection(closestIndex);
         }
-      }
-    }
+      }, 100);
+    });
 
     // ── Gamepad / Remote navigation (Gamepad API) ────────────────────────────
     const gamePadState = { prevButtons: {} };
