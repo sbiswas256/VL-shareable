@@ -104,7 +104,7 @@
       color: var(--text);
       min-height: 100vh;
       position: relative;
-      overflow-x: auto;
+      overflow-x: hidden;
       overflow-y: visible;
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -116,9 +116,10 @@
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
+      gap: 1rem;
       padding: 1rem 5vw;
       background: var(--footer-bg);
       box-shadow: var(--shadow);
@@ -141,10 +142,13 @@
       letter-spacing: 0.5px;
       transition: transform 0.3s ease;
       cursor: pointer;
+      justify-self: start;
     }
 
     header h1.bangla-title {
       font-size: 2.6em;
+      justify-self: center;
+      text-align: center;
     }
 
     header h1:hover {
@@ -155,6 +159,7 @@
       display: flex;
       gap: 1rem;
       align-items: center;
+      justify-self: end;
     }
 
     nav a {
@@ -240,21 +245,37 @@
     .cards {
       display: flex;
       flex-wrap: nowrap;
-      justify-content: center;
       align-items: center;
       gap: 36px;
-      width: max-content;
-      min-width: 100%;
-      overflow: visible;
+      width: 100%;
+      padding: 0 5vw;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       position: relative;
       z-index: 2;
       flex: 1;
+    }
+
+    .cards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .container:first-of-type {
+      margin-left: auto;
+    }
+
+    .container:last-of-type {
+      margin-right: auto;
     }
 
     .container {
       position: relative;
       flex: 0 0 auto;
       width: 350px;
+      min-width: 350px;
       padding: 50px;
       min-height: 500px;
       border-radius: 30px;
@@ -262,6 +283,7 @@
       box-shadow: var(--creator-card-shadow);
       cursor: pointer;
       transform: translateZ(0);
+      scroll-snap-align: center;
       will-change: transform, filter, opacity;
       transition:
         transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
@@ -610,16 +632,32 @@
     @media (max-width: 992px) {
       .cards {
         gap: 25px;
+        padding-left: calc(50vw - 160px);
+        padding-right: calc(50vw - 160px);
+        justify-content: flex-start;
+      }
+
+      .container:first-of-type {
+        margin-left: 0;
+      }
+
+      .container:last-of-type {
+        margin-right: 0;
       }
 
       .container {
         width: 320px;
+        min-width: 320px;
         padding: 40px;
         min-height: 450px;
       }
 
       header {
         padding: 1rem 3vw;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
       }
     }
 
@@ -631,38 +669,44 @@
       }
 
       header {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 12px;
+        padding: 15px 10px;
       }
 
       nav {
+        grid-column: 1 / -1;
         flex-wrap: wrap;
         /* allow wrapping if too scrunched */
         justify-content: center;
+        gap: 10px;
       }
 
       header h1 {
-        font-size: 1.7em;
+        font-size: 1.25em;
+        justify-self: end;
       }
 
       header h1.bangla-title {
-        font-size: 2.1em;
+        font-size: 1.55em;
+        justify-self: start;
       }
 
       .cards {
         gap: 15px;
-        padding-left: 5vw;
-        /* Soften the left edge margin for touch-scroll */
-        padding-right: 5vw;
+        padding-left: calc(50vw - (min(350px, 100vw - 40px) / 2));
+        padding-right: calc(50vw - (min(350px, 100vw - 40px) / 2));
         justify-content: flex-start;
-        /* Stop center-justifying on layout shrink to allow scrolling from edge */
       }
 
       .container {
         width: calc(100vw - 40px);
-        /* 100% of phone width minus some edge */
         max-width: 350px;
+        min-width: auto;
         padding: 30px 20px;
         min-height: 480px;
       }
@@ -673,6 +717,62 @@
 
       .creator h4 {
         font-size: 1.1em;
+      }
+    }
+
+    /* Short screens & Landscape (e.g., Mobile/Tablet landscape) */
+    @media (max-height: 700px) and (orientation: landscape) {
+      body {
+        overflow-y: hidden;
+      }
+
+      header {
+        padding: 5px 3vw;
+        gap: 15px;
+      }
+
+      header h1 {
+        font-size: 1.3em;
+      }
+
+      header h1.bangla-title {
+        font-size: 1.6em;
+      }
+
+      nav a {
+        padding: 5px 12px;
+        font-size: 0.85em;
+      }
+
+      .container {
+        min-height: auto;
+        height: 85vh;
+        padding: 15px 20px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .container h3 {
+        font-size: 1.2em;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .list {
+        margin: 10px 0;
+      }
+
+      .creator h4 {
+        font-size: 1em;
+      }
+
+      .creator h4 a {
+        padding: 5px 0;
       }
     }
 
@@ -691,7 +791,7 @@
 <body>
   <header>
     <h1>Visual Learning</h1>
-    <h1 class="bangla-title"> বাংলা </h1>
+    <h1 class="bangla-title"> জীবনবিজ্ঞান </h1>
     <nav>
       <a href="index.html">🏠 Home</a>
       <a href="Find Us/Suggestion.html">💡 Suggestion Box</a>
@@ -709,53 +809,41 @@
 
 
     <section class="container">
-      <h3>সহজ পাঠ </h3>
+      <h3>জীবনের প্রবহমানতা </h3>
       <div class="list">
         <div class="rank"><span>1</span></div>
         <div class="creator">
-          <h4><a href="#">প্রথম পাঠ </a></h4>
+          <h4><a href="Bio Chapters/Cell Division.html">কোষবিভাজন এবং কোষচক্র </a></h4>
         </div>
       </div>
       <div class="list">
         <div class="rank"><span>2</span></div>
         <div class="creator">
-          <h4><a href="#">দ্বিতীয় পাঠ </a></h4>
+          <h4><a href="Bio Chapters/CROMOSOME-DNA-RNA-GENE.html">ক্রোমোজোম-DNA-RNA-GENE</a></h4>
         </div>
       </div>
       <div class="list">
         <div class="rank"><span>3</span></div>
         <div class="creator">
-          <h4><a href="#">তৃতীয় পাঠ </a></h4>
+          <h4><a href="#">জনন</a></h4>
         </div>
       </div>
       <div class="list">
         <div class="rank"><span>4</span></div>
         <div class="creator">
-          <h4><a href="#">চতুর্থ পাঠ </a></h4>
+          <h4><a href="#">সপুষ্পক উদ্ভিদের যৌন জনন </a></h4>
         </div>
       </div>
       <div class="list">
         <div class="rank"><span>5</span></div>
         <div class="creator">
-          <h4><a href="#">পঞ্চম পাঠ </a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">ষষ্ঠ পাঠ </a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
-        <div class="creator">
-          <h4><a href="#">সপ্তম পাঠ </a></h4>
+          <h4><a href="#">বৃদ্ধি ও বিকাশ</a></h4>
         </div>
       </div>
     </section>
 
     <section class="container">
-      <h3>সহজ পাঠ </h3>
+      <h3>বংশগতি এবং জিনগত রোগ</h3>
       <div class="list">
         <div class="rank"><span>1</span></div>
         <div class="creator">
@@ -782,18 +870,6 @@
       </div>
       <div class="list">
         <div class="rank"><span>5</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
         <div class="creator">
           <h4><a href="#">Coming soon</a></h4>
         </div>
@@ -801,7 +877,7 @@
     </section>
 
     <section class="container">
-      <h3>সহজ পাঠ </h3>
+      <h3>অভিব্যাক্তি এবং অভিযোজন</h3>
       <div class="list">
         <div class="rank"><span>1</span></div>
         <div class="creator">
@@ -828,18 +904,6 @@
       </div>
       <div class="list">
         <div class="rank"><span>5</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
         <div class="creator">
           <h4><a href="#">Coming soon</a></h4>
         </div>
@@ -847,7 +911,7 @@
     </section>
 
     <section class="container">
-      <h3>সহজ পাঠ </h3>
+      <h3>পরিবেশ,সম্পদ,ও তার সংরক্ষণ</h3>
       <div class="list">
         <div class="rank"><span>1</span></div>
         <div class="creator">
@@ -874,18 +938,6 @@
       </div>
       <div class="list">
         <div class="rank"><span>5</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>6</span></div>
-        <div class="creator">
-          <h4><a href="#">Coming soon</a></h4>
-        </div>
-      </div>
-      <div class="list">
-        <div class="rank"><span>7</span></div>
         <div class="creator">
           <h4><a href="#">Coming soon</a></h4>
         </div>
@@ -959,7 +1011,7 @@
       lists[focusedListIndex].classList.add('is-active');
     }
 
-    function selectCard(index) {
+    function syncVisualSelection(index) {
       if (index < 0 || index >= cards.length) return;
       focusedIndex = index;
       focusedListIndex = -1;
@@ -971,11 +1023,13 @@
 
       cards[focusedIndex].classList.add('is-selected');
       document.body.classList.add('has-selection');
+    }
+
+    function selectCard(index) {
+      if (index < 0 || index >= cards.length) return;
+      syncVisualSelection(index);
       cards[focusedIndex].focus({ preventScroll: false });
       cards[focusedIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-
-      // Auto-select the first sub-point when the card is selected
-      selectSubPoint(focusedIndex, 0);
     }
 
     function deselectAll() {
@@ -998,6 +1052,20 @@
 
       const lists = card.querySelectorAll('.list');
       lists.forEach((list, j) => {
+        const anchor = list.querySelector('a');
+        if (anchor) {
+          anchor.addEventListener('click', event => {
+            if (focusedIndex !== i) {
+              event.preventDefault();
+            } else {
+              const isTouch = window.matchMedia("(pointer: coarse)").matches;
+              if (isTouch && focusedListIndex !== j) {
+                event.preventDefault();
+              }
+            }
+          });
+        }
+
         list.addEventListener('mouseenter', () => {
           if (focusedIndex === i) {
             selectSubPoint(i, j);
@@ -1008,8 +1076,17 @@
           event.stopPropagation();
           if (focusedIndex !== i) {
             selectCard(i);
+          } else {
+            const isTouch = window.matchMedia("(pointer: coarse)").matches;
+            if (isTouch && focusedListIndex !== j) {
+              selectSubPoint(i, j);
+            } else {
+              selectSubPoint(i, j);
+              if (anchor && event.target !== anchor && !anchor.contains(event.target)) {
+                anchor.click();
+              }
+            }
           }
-          selectSubPoint(i, j);
         });
       });
     });
@@ -1050,12 +1127,46 @@
           break;
         case 'Enter':
         case ' ':
-          if (focusedIndex === -1) selectCard(0);
+          if (focusedIndex === -1) {
+            selectCard(0);
+          } else if (focusedListIndex !== -1) {
+            const anchor = cards[focusedIndex].querySelectorAll('.list')[focusedListIndex].querySelector('a');
+            if (anchor) anchor.click();
+          }
           break;
         case 'Escape':
           deselectAll();
           break;
       }
+    });
+
+    // ── Native Scroll Sync ───────────────────────────────────────────────────
+    let scrollTimeout = null;
+    const cardsContainer = document.querySelector('.cards');
+
+    cardsContainer.addEventListener('scroll', () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const containerRect = cardsContainer.getBoundingClientRect();
+        const trueCenter = containerRect.left + (containerRect.width / 2);
+        let closestIndex = -1;
+        let minDistance = Infinity;
+
+        cards.forEach((card, i) => {
+          const rect = card.getBoundingClientRect();
+          const cardCenter = rect.left + (rect.width / 2);
+          const distance = Math.abs(trueCenter - cardCenter);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = i;
+          }
+        });
+
+        // Only update if they scrolled to a NEW card naturally
+        if (closestIndex !== -1 && focusedIndex !== closestIndex) {
+          syncVisualSelection(closestIndex);
+        }
+      }, 100);
     });
 
     // ── Gamepad / Remote navigation (Gamepad API) ────────────────────────────
@@ -1098,7 +1209,14 @@
         }
 
         // A / B
-        if (justPressed(0)) { if (focusedIndex === -1) selectCard(0); }
+        if (justPressed(0)) {
+          if (focusedIndex === -1) {
+            selectCard(0);
+          } else if (focusedListIndex !== -1) {
+            const anchor = cards[focusedIndex].querySelectorAll('.list')[focusedListIndex].querySelector('a');
+            if (anchor) anchor.click();
+          }
+        }
         if (justPressed(1)) { deselectAll(); }
 
         // Left stick
