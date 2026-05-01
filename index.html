@@ -1330,10 +1330,10 @@
 
     @media (max-width: 560px) {
       :root {
-        --thumb-width: 130px;
-        --thumb-height: 180px;
-        --thumb-top: calc(100% - 2rem - var(--thumb-height));
-        --thumb-left-1: calc(100% - var(--thumb-width) - 1.5rem);
+        --thumb-width: 110px;
+        --thumb-height: 165px;
+        --thumb-top: 35%;
+        --thumb-left-1: calc(100% - 125px);
       }
 
       .content {
@@ -1349,13 +1349,22 @@
       }
 
       .top-bar {
-        align-items: flex-start;
-        gap: 0.75rem;
+        padding: 0 0.5rem;
+        height: 5rem;
+        justify-content: center;
       }
 
       .top-links {
-        flex-wrap: wrap;
-        justify-content: flex-end;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 0.4rem;
+        width: 100%;
+      }
+
+      .top-bar-btn {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
       }
 
       .content {
@@ -1505,6 +1514,7 @@
     let ctx = null;
     let ambientMaster = null;
     let ambientStarted = false;
+    let bgmStopTimer = null;
     const entryAnnouncement = new Audio("https://ik.imagekit.io/n6fgfu3ih/ElevenLabs_2026-04-07T08_45_47_Michael%20-%20Expressive,%20Engaging%20and%20Warm_pvc_sp115_s50_sb50_v3.mp3");
     const backgroundMusic = new Audio("https://ik.imagekit.io/n6fgfu3ih/cef3b08f-0e96-4ed4-953b-20aaa716c852.mp3");
 
@@ -1553,9 +1563,19 @@
 
       backgroundMusic.play().catch(e => console.log("Music play blocked:", e));
       updateFade();
+
+      // Automatically fade out after 60 seconds of continuous play
+      if (bgmStopTimer) clearTimeout(bgmStopTimer);
+      bgmStopTimer = setTimeout(() => {
+        fadeBackgroundMusicOut(3000); // Smooth 3-second fade out
+      }, 60000);
     }
 
     function fadeBackgroundMusicOut(durationMs = 800) {
+      if (bgmStopTimer) {
+        clearTimeout(bgmStopTimer);
+        bgmStopTimer = null;
+      }
       const startTime = performance.now();
       const startVolume = backgroundMusic.volume;
 
