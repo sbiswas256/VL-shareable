@@ -585,6 +585,36 @@
       }
     }
 
+    @media (max-width: 500px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.25rem 1rem;
+        align-items: center;
+      }
+
+      header h1 {
+        font-size: 1.5em;
+        text-align: center;
+      }
+
+      nav {
+        width: 100%;
+        justify-content: center;
+        gap: 0.85rem;
+        flex-wrap: nowrap;
+      }
+
+      nav a {
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+
+      .theme-switch {
+        transform: scale(0.85);
+      }
+    }
+
     /* Targeted blocker for Canva menu dots */
     .iframe-wrapper {
       position: relative;
@@ -640,9 +670,9 @@
   <header>
     <h1>Visual Learning</h1>
     <nav>
-      <a href="index.html"> Home</a>
-      <a href="suggestion.html">Suggestion Box</a>
-      <button type="button" class="bgm-toggle" id="bgm-toggle" aria-pressed="false">Mute BGM</button>
+      <a href="../index.html"> Home</a>
+      <a href="../suggestion.html">Suggestion Box</a>
+
       <label class="theme-switch" title="Toggle dark/light mode">
         <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" />
         <span class="switch-slider">
@@ -653,11 +683,7 @@
     </nav>
   </header>
 
-  <audio id="bgm-audio" loop autoplay preload="none">
-    <source
-      src="https://ik.imagekit.io/n6fgfu3ih/Tranquility%20-%20Deep%20Healing%20Relaxing%20Music%20-%20Meditation%20Ambient%20Music(1).mp3"
-      type="audio/mpeg">
-  </audio>
+
 
   <main class="container">
     <div class="card top-video-card">
@@ -730,8 +756,6 @@
   <script>
     // Theme Toggle
     const themeToggle = document.getElementById('theme-toggle');
-    const bgmAudio = document.getElementById('bgm-audio');
-    const bgmToggle = document.getElementById('bgm-toggle');
     const html = document.documentElement;
 
     // Load saved theme or check system preference
@@ -745,44 +769,7 @@
       localStorage.setItem('theme', newTheme);
     });
 
-    // Background Music (BGM)
-    const updateBgmButton = () => {
-      const isMuted = bgmAudio.muted;
-      bgmToggle.textContent = isMuted ? 'Unmute BGM' : 'Mute BGM';
-      bgmToggle.setAttribute('aria-pressed', String(!isMuted));
-    };
 
-    const tryStartBgm = () => {
-      if (bgmAudio.muted) {
-        return;
-      }
-      bgmAudio.play().catch(() => { });
-    };
-
-    const savedBgmMuted = localStorage.getItem('bgmMuted');
-    bgmAudio.muted = savedBgmMuted === 'true';
-    updateBgmButton();
-    tryStartBgm();
-
-    const startBgmOnFirstInteraction = () => {
-      tryStartBgm();
-      ['click', 'keydown', 'touchstart'].forEach((eventName) => {
-        document.removeEventListener(eventName, startBgmOnFirstInteraction);
-      });
-    };
-
-    ['click', 'keydown', 'touchstart'].forEach((eventName) => {
-      document.addEventListener(eventName, startBgmOnFirstInteraction, { once: true, passive: true });
-    });
-
-    bgmToggle.addEventListener('click', () => {
-      bgmAudio.muted = !bgmAudio.muted;
-      localStorage.setItem('bgmMuted', String(bgmAudio.muted));
-      updateBgmButton();
-      if (!bgmAudio.muted) {
-        tryStartBgm();
-      }
-    });
 
     // Page transition effect
     document.querySelectorAll('nav a').forEach(link => {
