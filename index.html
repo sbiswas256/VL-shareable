@@ -118,16 +118,16 @@
       overflow: hidden;
       background:
         linear-gradient(140deg, #030812 0%, #09111f 50%, #0c1626 100%);
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.05),
         inset 0 -20px 40px rgba(0, 0, 0, 0.4);
       opacity: 1;
+      will-change: transform, opacity;
       transition:
         transform var(--landing-reveal-slide-duration) var(--landing-reveal-ease),
-        opacity 1.2s var(--fluid-ease-soft),
-        filter 1.2s var(--fluid-ease-soft);
+        opacity 1s var(--fluid-ease-soft);
     }
 
     .landing-reveal__panel::before {
@@ -135,18 +135,14 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02) 36%, rgba(255, 255, 255, 0) 60%),
-        radial-gradient(circle at 46% 50%, rgba(255, 255, 255, 0.24), transparent 18%),
-        radial-gradient(circle at 60% 36%, rgba(255, 255, 255, 0.14), transparent 20%),
-        radial-gradient(circle at 34% 66%, rgba(215, 235, 255, 0.12), transparent 22%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02) 36%, rgba(255, 255, 255, 0) 60%);
       opacity: 0.5;
       pointer-events: none;
+      will-change: transform, opacity;
       transition:
         opacity var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft),
-        transform var(--landing-reveal-slide-duration) var(--landing-reveal-ease),
-        filter var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft);
-      transform: scale(0.94);
-      filter: blur(18px);
+        transform var(--landing-reveal-slide-duration) var(--landing-reveal-ease);
+      transform: scale(1) translate3d(0,0,0);
     }
 
     .landing-reveal__panel-split {
@@ -162,32 +158,18 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(140deg, rgba(3, 8, 18, 0.92), rgba(9, 17, 31, 0.66) 52%, rgba(12, 22, 38, 0.76)),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0) 32%),
-        radial-gradient(circle at 18% 28%, rgba(110, 231, 183, 0.16), transparent 30%),
-        radial-gradient(circle at 82% 72%, rgba(96, 165, 250, 0.22), transparent 34%),
-        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 42%),
-        linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0)),
-        radial-gradient(circle at 18% 48%, rgba(255, 255, 255, 0.42), transparent 12%),
-        radial-gradient(circle at 32% 40%, rgba(248, 252, 255, 0.34), transparent 16%),
-        radial-gradient(circle at 50% 52%, rgba(236, 246, 255, 0.38), transparent 19%),
-        radial-gradient(circle at 68% 42%, rgba(248, 252, 255, 0.28), transparent 15%),
-        radial-gradient(circle at 82% 56%, rgba(255, 255, 255, 0.24), transparent 12%);
+        linear-gradient(140deg, rgba(3, 8, 18, 0.92), rgba(9, 17, 31, 0.66) 52%, rgba(12, 22, 38, 0.76));
       box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 -14px 28px rgba(5, 10, 20, 0.16);
-      backdrop-filter: blur(24px) saturate(136%);
-      -webkit-backdrop-filter: blur(24px) saturate(136%);
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       opacity: 0;
-      filter: blur(8px) saturate(1.04);
-      transform: scale(1.01);
+      transform: scale(1) translate3d(0,0,0);
+      will-change: transform, opacity;
       transition:
         opacity var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft),
-        transform var(--landing-reveal-slide-duration) var(--landing-reveal-ease),
-        filter var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft),
-        backdrop-filter var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft),
-        -webkit-backdrop-filter var(--landing-reveal-slide-duration) var(--landing-reveal-ease-soft);
+        transform var(--landing-reveal-slide-duration) var(--landing-reveal-ease);
     }
 
     .landing-reveal__panel-split::before {
@@ -371,22 +353,28 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: min(20rem, 25vw);
+      width: min(15rem, 20vw);
       aspect-ratio: 1;
       border-radius: 50%;
-      transform: translate(-50%, -50%) scale(0.1);
+      transform: translate3d(-50%, -50%, 0) scale(0.1);
       opacity: 0;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+      /* Water-like refractive ring gradient */
+      background: radial-gradient(circle, transparent 45%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 55%, transparent 70%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
       will-change: transform, opacity;
-      animation: revealBackgroundWave 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: revealBackgroundWave 4s cubic-bezier(0.1, 0, 0.1, 1) forwards;
       pointer-events: none;
     }
 
     .landing-reveal__wave--reveal {
-      width: min(30rem, 40vw);
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 70%);
-      animation: revealFinalWave calc(var(--landing-reveal-slide-duration) + 1s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      width: 100vmax;
+      height: 100vmax;
+      background: radial-gradient(circle, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+      animation: revealFinalWave calc(var(--landing-reveal-slide-duration) + 1s) cubic-bezier(0.1, 0, 0.1, 1) forwards;
     }
 
     .landing-reveal__wave::before,
@@ -395,21 +383,28 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      opacity: 0.68;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Final reveal shouldn't have multiple huge layers */
+    .landing-reveal__wave--reveal::before,
+    .landing-reveal__wave--reveal::after {
+      display: none;
     }
 
     .landing-reveal__wave::before {
-      transform: scale(1.18);
+      transform: scale(0.85);
+      animation: rippleSub 4.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
     .landing-reveal__wave::after {
-      transform: scale(1.36);
-      opacity: 0.42;
-      border: 0;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.03) 32%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.04) 68%, rgba(255, 255, 255, 0) 100%);
-      filter: blur(3px);
-      animation: revealWaveSheen 3.8s cubic-bezier(0.22, 0.62, 0.2, 1) forwards;
+      transform: scale(1.15);
+      opacity: 0.2;
+      border: none;
+      background: radial-gradient(circle, transparent 50%, rgba(255, 255, 255, 0.05) 55%, transparent 70%);
+      filter: blur(2px);
     }
 
     .landing-reveal__wave--reveal::after {
@@ -432,24 +427,34 @@
       text-align: center;
       text-wrap: balance;
       opacity: 0;
-      transform: translateY(30px);
-      filter: blur(10px);
+      transform: scale(4);
+      filter: blur(30px);
       transition:
-        opacity 0.8s var(--fluid-ease),
-        transform 0.8s var(--fluid-ease),
-        filter 0.8s var(--fluid-ease);
+        opacity 0.7s cubic-bezier(0.2, 0, 0.2, 1),
+        transform 0.7s cubic-bezier(0.2, 0, 0.2, 1),
+        filter 0.7s cubic-bezier(0.2, 0, 0.2, 1);
+      will-change: transform, opacity, filter;
     }
 
     .landing-reveal__message.is-active {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: scale(1);
       filter: blur(0);
+      transition:
+        opacity 0.7s cubic-bezier(0.2, 0, 0.2, 1),
+        transform 0.7s cubic-bezier(0.2, 0.2, 0.2, 1.2),
+        filter 0.7s cubic-bezier(0.2, 0, 0.2, 1);
     }
 
     .landing-reveal__message.is-exiting {
       opacity: 0;
-      transform: translateY(0) scale(1.16);
-      filter: blur(12px);
+      /* Smoke effect: Expand, rise, and deep blur */
+      transform: scale(1.6) translateY(-60px) rotate(2deg);
+      filter: blur(50px) brightness(2);
+      transition: 
+        opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 1.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes revealBackgroundWave {
@@ -457,25 +462,31 @@
         transform: translate(-50%, -50%) scale(0.1);
         opacity: 0;
       }
-      20% {
-        opacity: 0.6;
+      15% {
+        opacity: 0.8;
       }
       100% {
-        transform: translate(-50%, -50%) scale(8);
+        transform: translate(-50%, -50%) scale(12);
         opacity: 0;
       }
     }
 
+    @keyframes rippleSub {
+      0% { transform: scale(0.05); opacity: 0; }
+      15% { opacity: 0.4; }
+      100% { transform: scale(10); opacity: 0; }
+    }
+
     @keyframes revealFinalWave {
       0% {
-        transform: translate(-50%, -50%) scale(0.1);
+        transform: translate(-50%, -50%) scale(0.01);
         opacity: 0;
       }
-      30% {
+      20% {
         opacity: 1;
       }
       100% {
-        transform: translate(-50%, -50%) scale(25);
+        transform: translate(-50%, -50%) scale(4);
         opacity: 0;
       }
     }
@@ -608,13 +619,13 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: var(--shadow-premium);
       transition:
-        top 0.9s var(--fluid-ease),
-        left 0.9s var(--fluid-ease),
-        width 0.9s var(--fluid-ease),
-        height 0.9s var(--fluid-ease),
-        transform 0.7s var(--fluid-ease),
-        opacity 0.7s var(--fluid-ease-soft),
-        border-radius 0.9s var(--fluid-ease);
+        top 0.65s var(--fluid-ease),
+        left 0.65s var(--fluid-ease),
+        width 0.65s var(--fluid-ease),
+        height 0.65s var(--fluid-ease),
+        transform 0.5s var(--fluid-ease),
+        opacity 0.5s var(--fluid-ease-soft),
+        border-radius 0.65s var(--fluid-ease);
       pointer-events: auto;
       z-index: 1;
       will-change: top, left, width, height, transform, opacity;
@@ -1298,7 +1309,45 @@
       }
     }
 
+    @media (max-width: 900px) {
+      :root {
+        --thumb-width: 150px;
+        --thumb-height: 200px;
+        --thumb-top: calc(100% - 3rem - var(--thumb-height));
+        --thumb-left-1: calc(100% - var(--thumb-width) - 2rem);
+      }
+
+      .slide .item:nth-child(4) {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+
+      .content {
+        width: min(28rem, 55%) !important;
+      }
+    }
+
     @media (max-width: 560px) {
+      :root {
+        --thumb-width: 130px;
+        --thumb-height: 180px;
+        --thumb-top: calc(100% - 2rem - var(--thumb-height));
+        --thumb-left-1: calc(100% - var(--thumb-width) - 1.5rem);
+      }
+
+      .content {
+        width: min(24rem, 90%) !important;
+        left: 5% !important;
+        bottom: 7rem !important;
+      }
+
+      .slide .item:nth-child(3) {
+        /* On very small phones, we might want to hide the thumbnail entirely if it still overlaps, 
+           but the user asked for one small card. I'll make it smaller. */
+        box-shadow: 10px 12px 24px rgba(0, 0, 0, 0.4);
+      }
+
       .top-bar {
         align-items: flex-start;
         gap: 0.75rem;
@@ -1618,7 +1667,7 @@
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
       const revealSlideDurationMs = prefersReducedMotion ? 80 : 1500;
-      const navTransitionLockMs = prefersReducedMotion ? 120 : (coarsePointer ? 520 : 600);
+      const navTransitionLockMs = prefersReducedMotion ? 120 : (coarsePointer ? 420 : 480);
       const swipeThresholdPx = Math.max(36, Math.min(84, Math.round((window.innerWidth || 360) * 0.08)));
       let contentRevealTimer;
       let isNavigating = false;
@@ -1815,13 +1864,9 @@
         wave.className = "landing-reveal__wave";
         if (variant === "reveal") {
           wave.classList.add("landing-reveal__wave--reveal");
-          wave.style.left = "50%";
-          wave.style.top = "50%";
-        } else {
-          const verticalOffset = ((index % 2 === 0 ? 46 : 54) + (index * 2));
-          wave.style.left = "50%";
-          wave.style.top = `${Math.min(60, verticalOffset)}%`;
         }
+        wave.style.left = "50%";
+        wave.style.top = "50%";
         wave.addEventListener("animationend", () => wave.remove(), { once: true });
         landingRevealWaveStage.appendChild(wave);
       }
@@ -1835,7 +1880,10 @@
             });
           }
         });
-        triggerRevealWave(index);
+        // Delay the wave to match the moment the text "hits" the display (approx. end of zoom-out)
+        window.setTimeout(() => {
+          triggerRevealWave(index);
+        }, 600);
       }
 
       function exitRevealMessage(index) {
