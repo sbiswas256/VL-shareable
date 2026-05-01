@@ -45,6 +45,7 @@
 
     html {
       scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
@@ -191,6 +192,9 @@
       cursor: pointer;
       position: relative;
       border: var(--neo-border);
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      will-change: transform, box-shadow;
     }
 
     .card::before {
@@ -646,10 +650,11 @@
       position: absolute;
       border-radius: 50%;
       transform: scale(0);
-      animation: ripple 0.6s linear;
-      background-color: rgba(0, 123, 255, 0.3);
+      background-color: rgba(0, 123, 255, 0.25);
       pointer-events: none;
       z-index: 100;
+      will-change: transform, opacity;
+      animation: ripple 0.65s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
 
     [data-theme="dark"] .ripple {
@@ -657,8 +662,13 @@
     }
 
     @keyframes ripple {
-      to {
-        transform: scale(4);
+      0% {
+        transform: scale(0);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(2.5);
         opacity: 0;
       }
     }
@@ -670,6 +680,7 @@
   <header>
     <h1>Visual Learning</h1>
     <nav>
+      <button type="button" class="bgm-toggle" id="bgm-toggle" aria-pressed="false"> BGM off </button>
       <a href="../index.html"> Home</a>
       <a href="../suggestion.html">Suggestion Box</a>
 
@@ -683,7 +694,11 @@
     </nav>
   </header>
 
-
+  <audio id="bgm-audio" loop autoplay preload="none">
+    <source
+      src="https://ik.imagekit.io/n6fgfu3ih/Tranquility%20-%20Deep%20Healing%20Relaxing%20Music%20-%20Meditation%20Ambient%20Music(1).mp3"
+      type="audio/mpeg">
+  </audio>
 
   <main class="container">
     <div class="card top-video-card">
@@ -756,6 +771,8 @@
   <script>
     // Theme Toggle
     const themeToggle = document.getElementById('theme-toggle');
+    const bgmAudio = document.getElementById('bgm-audio');
+    const bgmToggle = document.getElementById('bgm-toggle');
     const html = document.documentElement;
 
     // Load saved theme or check system preference
@@ -768,6 +785,48 @@
       html.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
     });
+
+    // Background Music (BGM)
+    const updateBgmButton = () => {
+      if (!bgmAudio || !bgmToggle) return;
+      const isMuted = bgmAudio.muted;
+      bgmToggle.textContent = isMuted ? ' BGM on' : ' BGM off';
+      bgmToggle.setAttribute('aria-pressed', String(!isMuted));
+    };
+
+    const tryStartBgm = () => {
+      if (!bgmAudio || bgmAudio.muted) return;
+      bgmAudio.play().catch(() => { });
+    };
+
+    const savedBgmMuted = localStorage.getItem('bgmMuted');
+    if (bgmAudio) {
+      bgmAudio.muted = savedBgmMuted === 'true';
+      updateBgmButton();
+      tryStartBgm();
+    }
+
+    const startBgmOnFirstInteraction = () => {
+      tryStartBgm();
+      ['click', 'keydown', 'touchstart'].forEach((eventName) => {
+        document.removeEventListener(eventName, startBgmOnFirstInteraction);
+      });
+    };
+
+    ['click', 'keydown', 'touchstart'].forEach((eventName) => {
+      document.addEventListener(eventName, startBgmOnFirstInteraction, { once: true, passive: true });
+    });
+
+    if (bgmToggle) {
+      bgmToggle.addEventListener('click', () => {
+        bgmAudio.muted = !bgmAudio.muted;
+        localStorage.setItem('bgmMuted', String(bgmAudio.muted));
+        updateBgmButton();
+        if (!bgmAudio.muted) {
+          tryStartBgm();
+        }
+      });
+    }
 
 
 
@@ -786,21 +845,28 @@
     // Scroll-to-Top Button
     const scrollBtn = document.getElementById('scroll-to-top');
 
+    // Optimized scroll handling
+    let isScrolling = false;
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        scrollBtn.classList.add('visible');
-      } else {
-        scrollBtn.classList.remove('visible');
-      }
+      if (!isScrolling) {
+        window.requestAnimationFrame(() => {
+          if (window.scrollY > 300) {
+            scrollBtn.classList.add('visible');
+          } else {
+            scrollBtn.classList.remove('visible');
+          }
 
-      // Enhanced header shadow on scroll
-      const header = document.querySelector('header');
-      if (window.scrollY > 0) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
+          const header = document.querySelector('header');
+          if (window.scrollY > 0) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+          isScrolling = false;
+        });
+        isScrolling = true;
       }
-    });
+    }, { passive: true });
 
     scrollBtn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -944,29 +1010,29 @@
 
     window.addEventListener('keydown', handleNavigation);
 
-    // Card ripple effect on click
+    // High-performance card ripple effect
     document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('click', function (e) {
+      card.addEventListener('pointerdown', function (e) {
+        // Prevent multiple ripples if clicking fast
+        const existing = this.querySelector('.ripple');
+        if (existing) existing.remove();
+
         const rect = this.getBoundingClientRect();
-        const ripple = document.createElement('span');
         const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.classList.add('ripple');
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.width = ripple.style.height = (size * 0.8) + 'px';
+        ripple.style.left = (x - size * 0.4) + 'px';
+        ripple.style.top = (y - size * 0.4) + 'px';
 
-        this.style.position = 'relative';
-        this.style.overflow = 'hidden';
         this.appendChild(ripple);
 
         // Cleanup ripple element after animation
-        setTimeout(() => {
-          ripple.remove();
-        }, 600);
-      });
+        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+      }, { passive: true });
     });
 
     // Page load animation
