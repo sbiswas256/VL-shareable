@@ -255,9 +255,14 @@
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
       -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      touch-action: pan-x;
+      overscroll-behavior-x: contain;
       position: relative;
       z-index: 2;
       flex: 1;
+      will-change: scroll-position;
     }
 
     .cards::-webkit-scrollbar {
@@ -283,15 +288,18 @@
       background-color: var(--creator-card-bg);
       box-shadow: var(--creator-card-shadow);
       cursor: pointer;
-      transform: translateZ(0);
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      perspective: 1000px;
       scroll-snap-align: center;
-      will-change: transform, filter, opacity;
+      will-change: transform, opacity;
       transition:
         transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
-        filter 0.38s cubic-bezier(0.16, 1, 0.3, 1),
         opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1),
         box-shadow 0.46s cubic-bezier(0.16, 1, 0.3, 1),
-        background-color 0.3s ease;
+        background-color 0.3s ease,
+        filter 0.38s ease;
     }
 
     .container:focus {
@@ -1141,34 +1149,35 @@
       }
     });
 
-    // ── Native Scroll Sync ───────────────────────────────────────────────────
-    let scrollTimeout = null;
-    const cardsContainer = document.querySelector('.cards');
-
-    cardsContainer.addEventListener('scroll', () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const containerRect = cardsContainer.getBoundingClientRect();
-        const trueCenter = containerRect.left + (containerRect.width / 2);
-        let closestIndex = -1;
-        let minDistance = Infinity;
-
-        cards.forEach((card, i) => {
-          const rect = card.getBoundingClientRect();
-          const cardCenter = rect.left + (rect.width / 2);
-          const distance = Math.abs(trueCenter - cardCenter);
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestIndex = i;
+    // ── Performance-Optimized Scroll Sync ────────────────────────────────────
+    const observerOptions = {
+      root: cardsContainer,
+      threshold: 0.6,
+    };
+    
+    let isAutoScrolling = false;
+    const observer = new IntersectionObserver((entries) => {
+      if (isAutoScrolling) return;
+      
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = Array.from(cards).indexOf(entry.target);
+          if (index !== -1 && index !== focusedIndex) {
+            syncVisualSelection(index);
           }
-        });
-
-        // Only update if they scrolled to a NEW card naturally
-        if (closestIndex !== -1 && focusedIndex !== closestIndex) {
-          syncVisualSelection(closestIndex);
         }
-      }, 100);
-    });
+      });
+    }, observerOptions);
+
+    cards.forEach(card => observer.observe(card));
+
+    // Override selectCard to prevent observer from firing during programmatic scrolls
+    const originalSelectCard = selectCard;
+    selectCard = function(index) {
+      isAutoScrolling = true;
+      originalSelectCard(index);
+      setTimeout(() => { isAutoScrolling = false; }, 600);
+    };
 
     // ── Gamepad / Remote navigation (Gamepad API) ────────────────────────────
     const gamePadState = { prevButtons: {} };
