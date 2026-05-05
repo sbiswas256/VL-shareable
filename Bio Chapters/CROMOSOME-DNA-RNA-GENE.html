@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Learning</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-light: #cde1fe;
+            --background: #fafbfc;
+            --card-bg: #f1f4f8;
+            --card-radius: 14px;
+            --shadow: 8px 8px 18px rgba(163, 177, 198, 0.45), -8px -8px 18px rgba(255, 255, 255, 0.95);
+            --shadow-hover: 12px 12px 24px rgba(163, 177, 198, 0.5), -12px -12px 24px rgba(255, 255, 255, 1);
+            --neo-inset: inset 6px 6px 12px rgba(163, 177, 198, 0.35), inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+            --neo-border: 1px solid rgba(255, 255, 255, 0.65);
+            --text: #222;
+            --nav-text: #444;
+            --footer-bg: #f1f4f8;
+            --footer-border: #eee;
+        }
+
+        [data-theme="dark"] {
+            --primary: #4a9eff;
+            --primary-light: #1a3a5c;
+            --background: #1f2228;
+            --card-bg: #2b3038;
+            --shadow: 8px 8px 18px rgba(14, 16, 20, 0.85), -8px -8px 18px rgba(58, 66, 78, 0.35);
+            --shadow-hover: 12px 12px 24px rgba(12, 14, 18, 0.9), -12px -12px 24px rgba(66, 74, 88, 0.4);
+            --neo-inset: inset 6px 6px 12px rgba(10, 12, 16, 0.7), inset -6px -6px 12px rgba(70, 80, 96, 0.28);
+            --neo-border: 1px solid rgba(255, 255, 255, 0.06);
+            --text: #e0e0e0;
+            --nav-text: #b0b0b0;
+            --footer-bg: #2b3038;
+            --footer-border: #3a404b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5vw;
+            background: var(--footer-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: box-shadow 0.3s ease;
+            border: var(--neo-border);
+        }
+
+        header.scrolled {
+            box-shadow: var(--shadow-hover);
+        }
+
+        header h1 {
+            font-size: 2em;
+            color: var(--primary);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        header h1:hover {
+            transform: scale(1.05);
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        nav a,
+        nav .bgm-toggle {
+            text-decoration: none;
+            color: var(--nav-text);
+            font-weight: 500;
+            font-size: 1em;
+            padding: 10px 24px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            background: var(--footer-bg);
+            border: var(--neo-border);
+            box-shadow: var(--shadow);
+            font-family: inherit;
+        }
+
+        nav a::after {
+            display: none;
+        }
+
+        nav .bgm-toggle {
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav a:hover,
+        nav .bgm-toggle:hover {
+            background: var(--footer-bg);
+            color: var(--primary);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        nav a:active,
+        nav .bgm-toggle:active {
+            box-shadow: var(--neo-inset);
+            transform: translateY(0);
+        }
+
+        [data-theme="dark"] nav a,
+        [data-theme="dark"] nav .bgm-toggle {
+            background: var(--card-bg);
+        }
+
+        [data-theme="dark"] nav a:hover,
+        [data-theme="dark"] nav .bgm-toggle:hover {
+            background: var(--card-bg);
+        }
+
+        .container {
+            padding: 2.5rem 5vw;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        body.fade-out {
+            animation: fadeOut 0.4s ease-in forwards;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+            cursor: pointer;
+            position: relative;
+            border: var(--neo-border);
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            will-change: transform, box-shadow;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover,
+        .card:focus-within,
+        .card:focus {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+            outline: none;
+        }
+
+        .card:focus {
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.5), 0 0 50px rgba(0, 123, 255, 0.7);
+            z-index: 10;
+        }
+
+        [data-theme="dark"] .card:focus {
+            box-shadow: 0 0 30px rgba(74, 158, 255, 0.6), 0 0 80px rgba(74, 158, 255, 0.9);
+        }
+
+        .card iframe,
+        .card .iframe-wrapper iframe,
+        .card .card-placeholder {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #eaeaea;
+            display: block;
+            transition: filter 0.3s ease;
+        }
+
+        [data-theme="dark"] .card iframe,
+        [data-theme="dark"] .card .card-placeholder {
+            background: #444;
+        }
+
+        /* Fullscreen styling */
+        .card.zoom-disappear {
+            transform: scale(0.9) !important;
+            opacity: 0 !important;
+            transition: all 0.4s cubic-bezier(0.25, 0.45, 0.45, 0.95) !important;
+            pointer-events: none;
+        }
+
+        .iframe-wrapper:fullscreen,
+        .intro-video-frame:fullscreen,
+        .iframe-wrapper:-webkit-full-screen,
+        .intro-video-frame:-webkit-full-screen,
+        .iframe-wrapper:-ms-fullscreen,
+        .intro-video-frame:-ms-fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .iframe-wrapper:fullscreen iframe,
+        .intro-video-frame:fullscreen iframe,
+        .iframe-wrapper:-webkit-full-screen iframe,
+        .intro-video-frame:-webkit-full-screen iframe,
+        .iframe-wrapper:-ms-fullscreen iframe,
+        .intro-video-frame:-ms-fullscreen iframe {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+        }
+
+        .card:hover iframe,
+        .card:hover .card-placeholder {
+            filter: brightness(1.05);
+        }
+
+        .card .card-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6.6em;
+            color: #aaa;
+            background: linear-gradient(135deg, #f5f6fa 0%, #f0f1f3 100%);
+            min-height: 90px;
+            user-select: none;
+        }
+
+        [data-theme="dark"] .card .card-placeholder {
+            color: #666;
+            background: linear-gradient(135deg, #444 0%, #3a3a3a 100%);
+        }
+
+        .card-title {
+            padding: 1.1rem;
+            font-weight: 500;
+            font-size: 1.17em;
+            text-align: center;
+            color: var(--text);
+            background: var(--background);
+            width: 100%;
+            border-top: var(--neo-border);
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .card:hover .card-title {
+            background: var(--footer-bg);
+            color: var(--primary);
+        }
+
+        .top-video-card {
+            grid-column: 1 / -1;
+            max-width: 1360px;
+            width: 100%;
+            justify-self: center;
+            border-radius: 22px;
+            border: 1px solid rgba(0, 123, 255, 0.22);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55), 14px 14px 30px rgba(163, 177, 198, 0.55), -14px -14px 30px rgba(255, 255, 255, 1);
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .top-video-card::before {
+            opacity: 1;
+            background: linear-gradient(120deg, rgba(0, 123, 255, 0.2) 0%, rgba(0, 123, 255, 0.06) 35%, rgba(0, 123, 255, 0) 75%);
+        }
+
+        .top-video-card iframe {
+            border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+            filter: saturate(1.05) contrast(1.03);
+        }
+
+        .intro-video-frame {
+            position: relative;
+            aspect-ratio: 17 / 9;
+            background: #eaeaea;
+            overflow: hidden;
+        }
+
+        .intro-video-frame iframe {
+            position: absolute;
+            inset: 0;
+            height: calc(100% + 48px);
+        }
+
+        .top-video-card .card-title {
+            margin-top: -36px;
+            font-size: 1.24em;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #0554ad;
+            background: #e8f3ff;
+            border-top: 1px solid rgba(0, 123, 255, 0.22);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+            position: relative;
+            z-index: 4;
+        }
+
+        .top-video-card:hover,
+        .top-video-card:focus-within {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 18px 18px 36px rgba(163, 177, 198, 0.6), -18px -18px 36px rgba(255, 255, 255, 1);
+        }
+
+        [data-theme="dark"] .top-video-card {
+            border: 1px solid rgba(74, 158, 255, 0.36);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 16px 16px 34px rgba(10, 12, 16, 0.9), -14px -14px 30px rgba(70, 80, 96, 0.28);
+        }
+
+        [data-theme="dark"] .top-video-card::before {
+            background: linear-gradient(120deg, rgba(74, 158, 255, 0.24) 0%, rgba(74, 158, 255, 0.08) 35%, rgba(74, 158, 255, 0) 75%);
+        }
+
+        [data-theme="dark"] .top-video-card iframe {
+            border-bottom: 1px solid rgba(74, 158, 255, 0.25);
+        }
+
+        [data-theme="dark"] .intro-video-frame {
+            background: #444;
+        }
+
+        [data-theme="dark"] .top-video-card .card-title {
+            color: #b8d9ff;
+            background: #182638;
+            border-top-color: rgba(74, 158, 255, 0.36);
+            text-shadow: none;
+        }
+
+        [data-theme="dark"] .top-video-card:hover,
+        [data-theme="dark"] .top-video-card:focus-within {
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 20px 20px 40px rgba(8, 10, 13, 0.95), -16px -16px 34px rgba(76, 86, 102, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--footer-bg);
+            color: #666;
+            font-size: 1em;
+            margin-top: 2rem;
+            border-top: 1px solid var(--footer-border);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            border-left: var(--neo-border);
+            border-right: var(--neo-border);
+        }
+
+        #scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            box-shadow: var(--shadow);
+            z-index: 99;
+        }
+
+        #scroll-to-top:hover {
+            transform: translateY(20px) scale(1.1);
+            box-shadow: var(--shadow-hover);
+        }
+
+        #scroll-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #theme-toggle {
+            display: none;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            position: relative;
+            width: 65px;
+            height: 34px;
+            cursor: pointer;
+        }
+
+        .switch-slider {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 45px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: var(--shadow);
+            border: var(--neo-border);
+        }
+
+        .icon {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sun-icon {
+            opacity: 1;
+            color: #ffffff;
+        }
+
+        .moon-icon {
+            opacity: 0;
+            color: #888888;
+        }
+
+        #theme-toggle:checked~.switch-slider .sun-icon {
+            opacity: 0;
+        }
+
+        #theme-toggle:checked~.switch-slider .moon-icon {
+            opacity: 1;
+        }
+
+        .switch-slider:before {
+            content: "";
+            position: absolute;
+            height: 28px;
+            width: 28px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 0;
+        }
+
+        #theme-toggle:checked+.switch-slider {
+            background-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        [data-theme="dark"] #theme-toggle:checked+.switch-slider {
+            background-color: #b0b0b0;
+            box-shadow: var(--shadow-hover);
+        }
+
+        #theme-toggle:checked+.switch-slider:before {
+            transform: translateX(31px);
+        }
+
+        .theme-switch:hover .switch-slider {
+            box-shadow: var(--shadow-hover);
+        }
+
+        [data-theme="dark"] .switch-slider {
+            background-color: var(--primary-light);
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            header,
+            .container {
+                padding-left: 2vw;
+                padding-right: 2vw;
+            }
+
+            .card-title {
+                font-size: 1em;
+            }
+
+            #scroll-to-top {
+                bottom: 1rem;
+                right: 1rem;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 1600px) {
+            header h1 {
+                font-size: 1.3em;
+            }
+
+            .card-title {
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.25rem 1rem;
+                align-items: center;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+                text-align: center;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+                gap: 0.85rem;
+                flex-wrap: nowrap;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+                white-space: nowrap;
+            }
+
+            .theme-switch {
+                transform: scale(0.85);
+            }
+        }
+
+        /* Targeted blocker for Canva menu dots */
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #eaeaea;
+        }
+
+        [data-theme="dark"] .iframe-wrapper {
+            background: #444;
+        }
+
+        .menu-blocker {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 160px;
+            height: 50px;
+            background: transparent;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        [data-theme="dark"] .menu-blocker {
+            background: transparent;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            background-color: rgba(0, 123, 255, 0.25);
+            pointer-events: none;
+            z-index: 100;
+            will-change: transform, opacity;
+            animation: ripple 0.65s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        [data-theme="dark"] .ripple {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+    </style>
+    <script src="../chapters-config.js"></script>
+    <script src="../security-vls.js"></script>
+    <script src="../activity-tracker.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Visual Learning</h1>
+        <nav>
+            <button type="button" class="bgm-toggle" id="bgm-toggle" aria-pressed="false"> BGM off </button>
+            <a href="../index.html"> Home</a>
+            <a href="../suggestion.html">Suggestion Box</a>
+
+            <label class="theme-switch" title="Toggle dark/light mode">
+                <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode" />
+                <span class="switch-slider">
+                    <span class="icon sun-icon"></span>
+                    <span class="icon moon-icon"></span>
+                </span>
+            </label>
+        </nav>
+    </header>
+
+    <audio id="bgm-audio" loop autoplay preload="none">
+        <source
+            src="https://ik.imagekit.io/n6fgfu3ih/Tranquility%20-%20Deep%20Healing%20Relaxing%20Music%20-%20Meditation%20Ambient%20Music(1).mp3"
+            type="audio/mpeg">
+    </audio>
+
+    <main class="container">
+        <!-- Cards will be loaded dynamically from chapters-config.js -->
+    </main>
+
+    </main>
+
+    <footer>
+        Â© 2025 Visual Learning. All rights reserved.
+    </footer>
+
+    <button id="scroll-to-top" aria-label="Back to top">â†‘</button>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const bgmAudio = document.getElementById('bgm-audio');
+        const bgmToggle = document.getElementById('bgm-toggle');
+        const html = document.documentElement;
+
+        // Load saved theme or check system preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.checked = savedTheme === 'dark';
+
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Background Music (BGM)
+        const targetVolume = 0.1;
+        const fadeDuration = 3; // seconds
+
+        const updateBgmButton = () => {
+            if (!bgmAudio || !bgmToggle) return;
+            const isMuted = bgmAudio.muted;
+            bgmToggle.textContent = isMuted ? ' BGM on' : ' BGM off';
+            bgmToggle.setAttribute('aria-pressed', String(!isMuted));
+        };
+
+        const tryStartBgm = () => {
+            if (!bgmAudio || bgmAudio.muted) return;
+            bgmAudio.play().catch(() => { });
+        };
+
+        bgmAudio.addEventListener('timeupdate', () => {
+            if (bgmAudio.muted || bgmAudio.paused) return;
+            
+            const currentTime = bgmAudio.currentTime;
+            const duration = bgmAudio.duration;
+            
+            if (duration > fadeDuration * 2) {
+                // Fade in at the start
+                if (currentTime < fadeDuration) {
+                    bgmAudio.volume = (currentTime / fadeDuration) * targetVolume;
+                } 
+                // Fade out at the end
+                else if (duration - currentTime < fadeDuration) {
+                    bgmAudio.volume = ((duration - currentTime) / fadeDuration) * targetVolume;
+                } 
+                // Middle - full volume
+                else {
+                    bgmAudio.volume = targetVolume;
+                }
+            } else {
+                bgmAudio.volume = targetVolume;
+            }
+        });
+
+        const savedBgmMuted = localStorage.getItem('bgmMuted');
+        if (bgmAudio) {
+            bgmAudio.muted = savedBgmMuted === 'true';
+            bgmAudio.volume = 0; // Start at 0 for fade in
+            updateBgmButton();
+            tryStartBgm();
+        }
+
+        const startBgmOnFirstInteraction = () => {
+            tryStartBgm();
+            ['click', 'keydown', 'touchstart'].forEach((eventName) => {
+                document.removeEventListener(eventName, startBgmOnFirstInteraction);
+            });
+        };
+
+        ['click', 'keydown', 'touchstart'].forEach((eventName) => {
+            document.addEventListener(eventName, startBgmOnFirstInteraction, { once: true, passive: true });
+        });
+
+        if (bgmToggle) {
+            bgmToggle.addEventListener('click', () => {
+                bgmAudio.muted = !bgmAudio.muted;
+                localStorage.setItem('bgmMuted', String(bgmAudio.muted));
+                updateBgmButton();
+                if (!bgmAudio.muted) {
+                    bgmAudio.volume = 0;
+                    tryStartBgm();
+                }
+            });
+        }
+
+        // Load dynamic cards from config
+        let lastFocusedCard = null;
+        window.setLastFocusedCard = (card) => { lastFocusedCard = card; };
+        loadChapterCards('chromosome');
+
+
+
+        // Page transition effect with BGM fade out
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.href;
+                document.body.classList.add('fade-out');
+                
+                // Start fading out the music manually for navigation
+                const fadeOutDuration = 3000;
+                const startVol = bgmAudio.volume;
+                const startTime = performance.now();
+                
+                const fade = (now) => {
+                    const elapsed = now - startTime;
+                    if (elapsed < fadeOutDuration) {
+                        bgmAudio.volume = Math.max(0, startVol * (1 - elapsed / fadeOutDuration));
+                        requestAnimationFrame(fade);
+                    } else {
+                        bgmAudio.volume = 0;
+                        window.location.href = url;
+                    }
+                };
+                
+                if (!bgmAudio.muted && !bgmAudio.paused) {
+                    requestAnimationFrame(fade);
+                } else {
+                    window.location.href = url;
+                }
+            });
+        });
+
+        // Scroll-to-Top Button
+        const scrollBtn = document.getElementById('scroll-to-top');
+
+        // Optimized scroll handling
+        let isScrolling = false;
+        window.addEventListener('scroll', () => {
+            if (!isScrolling) {
+                window.requestAnimationFrame(() => {
+                    if (window.scrollY > 300) {
+                        scrollBtn.classList.add('visible');
+                    } else {
+                        scrollBtn.classList.remove('visible');
+                    }
+
+                    const header = document.querySelector('header');
+                    if (window.scrollY > 0) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                    isScrolling = false;
+                });
+                isScrolling = true;
+            }
+        }, { passive: true });
+
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Logo click to home
+        const logo = document.querySelector('header h1');
+        logo.addEventListener('click', () => {
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 400);
+        });
+
+        // Card interactions are now managed in chapters-config.js
+
+        // TV Remote & Keyboard Fullscreen Exit (Back/Escape)
+        window.addEventListener('keydown', (e) => {
+            // Exit fullscreen on Back/Escape keys
+            // Common TV Back codes: Backspace (8), WebOS (461), Tizen (10009)
+            const isBackKey = ['Escape', 'Backspace', 'Exit', 'GoBack'].includes(e.key) ||
+                e.keyCode === 461 || e.keyCode === 10009;
+
+            if (isBackKey && document.fullscreenElement) {
+                document.exitFullscreen();
+                e.preventDefault();
+            }
+        });
+
+        // Navigation and Ripple logic below remains the same but works on dynamically created cards
+
+        // Re-focus the card when exiting fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && lastFocusedCard) {
+                lastFocusedCard.focus();
+                lastFocusedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        const handleNavigation = (e) => {
+            // If in fullscreen, let the iframe handle the arrow keys for slide navigation
+            if (document.fullscreenElement) return;
+
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+
+            const cards = Array.from(document.querySelectorAll('.card'));
+            let active = document.activeElement;
+
+            // If focus is inside an iframe, find the parent card
+            if (active.tagName === 'IFRAME' || !cards.includes(active)) {
+                const potentialCard = active.closest('.card');
+                if (potentialCard) active = potentialCard;
+            }
+
+            let index = cards.indexOf(active);
+
+            if (index === -1) {
+                // Fallback to last known card or first card
+                const target = lastFocusedCard || cards[0];
+                if (target) {
+                    target.focus();
+                    e.preventDefault();
+                }
+                return;
+            }
+
+            const container = document.querySelector('.container');
+            const cols = window.getComputedStyle(container).gridTemplateColumns.split(' ').length;
+            let nextIndex = -1;
+
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (index > 0) nextIndex = index - 1;
+                    break;
+                case 'ArrowRight':
+                    if (index < cards.length - 1) nextIndex = index + 1;
+                    break;
+                case 'ArrowUp':
+                    if (index === 0) return;
+                    if (index <= cols) nextIndex = 0;
+                    else nextIndex = index - cols;
+                    break;
+                case 'ArrowDown':
+                    if (index === 0) nextIndex = 1;
+                    else if (index + cols < cards.length) nextIndex = index + cols;
+                    else if (index < cards.length - 1) nextIndex = cards.length - 1;
+                    break;
+            }
+
+            if (nextIndex !== -1 && nextIndex !== index) {
+                cards[nextIndex].focus();
+                cards[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                e.preventDefault();
+            }
+        };
+
+        window.addEventListener('keydown', handleNavigation);
+
+        // Ripple effects are now managed in chapters-config.js
+
+        // Page load animation
+        window.addEventListener('load', () => {
+            document.body.style.animation = 'fadeIn 0.6s ease-out';
+        });
+    </script>
+</body>
+
+</html>
